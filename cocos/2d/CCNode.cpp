@@ -69,7 +69,7 @@ int Node::s_globalOrderOfArrival = 1;
 
 // MARK: Constructor, Destructor, Init
 
-Node::Node(void)
+Node::Node()
 : _rotationX(0.0f)
 , _rotationY(0.0f)
 , _rotationZ_X(0.0f)
@@ -118,6 +118,9 @@ Node::Node(void)
 , _cascadeColorEnabled(false)
 , _cascadeOpacityEnabled(false)
 , _cameraMask(1)
+#if CC_USE_PHYSICS
+, _physicsBody(nullptr)
+#endif
 {
     // set default scheduler and actionManager
     _director = Director::getInstance();
@@ -672,7 +675,7 @@ void Node::setTag(int tag)
     _tag = tag ;
 }
 
-std::string Node::getName() const
+const std::string& Node::getName() const
 {
     return _name;
 }
@@ -1876,6 +1879,9 @@ bool Node::addComponent(Component *component)
     // lazy alloc
     if (!_componentContainer)
         _componentContainer = new (std::nothrow) ComponentContainer(this);
+    
+    // should enable schedule update, then all components can receive this call back
+    scheduleUpdate();
     
     return _componentContainer->add(component);
 }
