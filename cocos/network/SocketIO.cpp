@@ -743,7 +743,7 @@ void SIOClientImpl::onOpen(WebSocket* ws)
 
 void SIOClientImpl::onMessage(WebSocket* ws, const WebSocket::Data& data)
 {
-    CCLOGINFO("SIOClientImpl::onMessage received: %s", data.bytes);
+    CCLOGINFO("SIOClientImpl::onMessage received:%s", data.bytes);
     CC_UNUSED_PARAM(ws);
 
     std::string payload = data.bytes;
@@ -751,7 +751,7 @@ void SIOClientImpl::onMessage(WebSocket* ws, const WebSocket::Data& data)
     payload = payload.substr(1, payload.size() - 1);
 
     SIOClient *c = nullptr;
-
+    
     switch (_version)
     {
         case SocketIOPacket::SocketIOVersion::V09x:
@@ -877,10 +877,14 @@ void SIOClientImpl::onMessage(WebSocket* ws, const WebSocket::Data& data)
                 break;
             case 4:
             {
-                const char second = payload.at(0);
-                int control2 = atoi(&second);
+                //const char second = payload.at(0);
+                //int control2 = atoi(&second);
+                
+                char szBuf[10]={0};
+                szBuf[0]=payload.at(0);
+                int control2 = atoi(szBuf);
                 CCLOGINFO("Message code: [%i]", control);
-
+     
                 SocketIOPacket *packetOut = SocketIOPacket::createPacketWithType("event", _version);
                 std::string endpoint = "";
 
