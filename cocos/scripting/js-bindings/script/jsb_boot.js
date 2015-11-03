@@ -1743,7 +1743,7 @@ cc.game = /** @lends cc.game# */{
                 var data = JSON.parse(txt);
                 this._initConfig(data || {});
             } catch (e) {
-                console.log("Failed to read or parse project.json");
+                console.log("Failed to read or parse project.json"+e);
                 this._initConfig({});
             }
         }

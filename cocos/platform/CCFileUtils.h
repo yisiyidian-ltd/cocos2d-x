@@ -346,6 +346,8 @@ public:
     virtual bool writeStringToFile(std::string dataStr, const std::string& fullPath);
 
 
+    virtual bool appendStringToFile(std::string dataStr, const std::string& fullPath);
+    virtual bool appendDataToFile(Data retData, const std::string& fullPath);
     /**
      * write Data into a file
      *

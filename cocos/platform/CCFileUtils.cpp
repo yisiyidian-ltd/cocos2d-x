@@ -595,6 +595,39 @@ bool FileUtils::writeDataToFile(Data retData, const std::string& fullPath)
     return false;
 }
 
+bool FileUtils::appendStringToFile(std::string dataStr, const std::string& fullPath)
+{
+    Data retData;
+    retData.copy((unsigned char*)dataStr.c_str(), dataStr.size());
+
+    return appendDataToFile(retData, fullPath);
+}
+
+bool FileUtils::appendDataToFile(Data retData, const std::string& fullPath)
+{
+    size_t size = 0;
+    const char* mode = "ab+";
+
+    CCASSERT(!fullPath.empty() && retData.getSize() != 0, "Invalid parameters.");
+
+    auto fileutils = FileUtils::getInstance();
+    do
+    {
+        // Read the file from hardware
+        FILE *fp = fopen(fileutils->getSuitableFOpen(fullPath).c_str(), mode);
+        CC_BREAK_IF(!fp);
+        size = retData.getSize();
+
+        fwrite(retData.getBytes(), size, 1, fp);
+
+        fclose(fp);
+
+        return true;
+    } while (0);
+
+    return false;
+}
+
 bool FileUtils::init()
 {
     _searchPathArray.push_back(_defaultResRootPath);
