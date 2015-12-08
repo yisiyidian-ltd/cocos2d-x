@@ -36,6 +36,9 @@ public:
     void downloadAsync();
     void download();
     
+    void downloadToFileAsync(std::string &savePath);
+    void downloadToFile(std::string &savePath);
+    
     static __JSDownloaderDelegator *create(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback);
 
 protected:
@@ -43,12 +46,15 @@ protected:
     ~__JSDownloaderDelegator();
     
     void startDownload();
+    void startDownloadToFile();
     
 private:
     void onSuccess(cocos2d::Texture2D *tex);
+    void onSuccessToFile();
     void onError();
     std::shared_ptr<cocos2d::network::Downloader> _downloader;
     std::string _url;
+    std::string _saveFileName;
     JSContext *_cx;
     mozilla::Maybe<JS::PersistentRootedObject> _jsCallback;
     mozilla::Maybe<JS::PersistentRootedObject> _obj;
