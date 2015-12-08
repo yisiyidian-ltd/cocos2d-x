@@ -1111,6 +1111,6 @@ void register_all_cocos2dx_extension_manual(JSContext* cx, JS::HandleObject glob
     JS_DefineFunction(cx, jsbObj, "loadRemoteImg", js_load_remote_image, 2, JSPROP_READONLY | JSPROP_PERMANENT);
     
     //add by flyingkisser
-    JS_DefineFunction(cx, jsbObj, "downadToFile", js_download_to_file, 3, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsbObj, "downloadToFile", js_download_to_file, 3, JSPROP_READONLY | JSPROP_PERMANENT);
 
 }
