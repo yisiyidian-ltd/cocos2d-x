@@ -30,6 +30,8 @@
 #include "cocos/network/CCDownloader.h"
 #include "renderer/CCTexture2D.h"
 
+#include "external/unzip/unzip.h"
+
 class __JSDownloaderDelegator : cocos2d::Ref
 {
 public:
@@ -39,26 +41,61 @@ public:
     void downloadToFileAsync(std::string &savePath);
     void downloadToFile(std::string &savePath);
     
-    static __JSDownloaderDelegator *create(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback);
+    void unzipToPathAsync(std::string &savePath,std::string& password);
+    
+    static __JSDownloaderDelegator *create(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback,JS::HandleObject callbackOnProgress);
 
 protected:
-    __JSDownloaderDelegator(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback);
+    __JSDownloaderDelegator(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback,JS::HandleObject callbackOnProgress);
     ~__JSDownloaderDelegator();
     
     void startDownload();
     void startDownloadToFile();
+    void startUnzipToPath();
     
 private:
     void onSuccess(cocos2d::Texture2D *tex);
     void onSuccessToFile();
     void onError();
+    void onProgress( int64_t bytesReceived,int64_t totalBytesReceived,int64_t totalBytesExpected);
     std::shared_ptr<cocos2d::network::Downloader> _downloader;
     std::string _url;
     std::string _saveFileName;
+    std::string _password;
     JSContext *_cx;
     mozilla::Maybe<JS::PersistentRootedObject> _jsCallback;
+    mozilla::Maybe<JS::PersistentRootedObject> _jsCallbackOnProgress;
+
     mozilla::Maybe<JS::PersistentRootedObject> _obj;
 };
+
+
+class ZipMgr : cocos2d::Ref
+{
+public:
+    static ZipMgr* getInstance();
+    int unzip(JSContext *cx, JS::HandleObject obj,std::string &zipFileName,std::string &unzipPath,std::string &password,JS::HandleObject callback);
+    int unzipAsync(JSContext *cx, JS::HandleObject obj,std::string &zipFileName,std::string &unzipPath,std::string &password);
+    int getCurrentNum(){return _currentNum;};
+    int getTotalNum(){return _totalNum;};
+    
+protected:
+    ZipMgr();
+    void onProgress();
+    int _unzip();
+    
+private:
+    JSContext *_cx;
+    mozilla::Maybe<JS::PersistentRootedObject> _obj;
+    std::string _fileName;
+    std::string _unzipPath;
+    std::string _password;
+    mozilla::Maybe<JS::PersistentRootedObject> _jsCallback;
+    int _totalNum;
+    int _currentNum;
+    bool _async;
+};
+
 
 void register_all_cocos2dx_extension_manual(JSContext* cx, JS::HandleObject global);
 

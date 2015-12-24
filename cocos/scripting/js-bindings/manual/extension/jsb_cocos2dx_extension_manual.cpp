@@ -828,25 +828,183 @@ bool js_cocos2dx_ext_AssetsManager_getFailedAssets(JSContext *cx, uint32_t argc,
 }
 */
 
-__JSDownloaderDelegator::__JSDownloaderDelegator(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback)
+static ZipMgr* s_ZipMgr_instance=0;
+ZipMgr* ZipMgr::getInstance()
+{
+    if(!s_ZipMgr_instance)
+        s_ZipMgr_instance=new (std::nothrow) ZipMgr();
+    s_ZipMgr_instance->autorelease();
+    s_ZipMgr_instance->retain();
+    return s_ZipMgr_instance;
+}
+
+
+ZipMgr::ZipMgr()
+{
+}
+
+int ZipMgr::unzip(JSContext *cx, JS::HandleObject obj,std::string &zipFileName,std::string &unzipPath,std::string &password,JS::HandleObject callback){
+    _cx=cx;
+    _obj.construct(_cx, obj);
+    _jsCallback.construct(_cx, callback);
+    
+    _fileName=zipFileName;
+    _unzipPath=unzipPath;
+    _password=password;
+    _totalNum=0;
+    _currentNum=0;
+    _async=false;
+    
+    return _unzip();
+}
+
+int ZipMgr::unzipAsync(JSContext *cx, JS::HandleObject obj,std::string &zipFileName,std::string &unzipPath,std::string &password){
+    _cx=cx;
+    _obj.construct(_cx, obj);
+    
+    _fileName=zipFileName;
+    _unzipPath=unzipPath;
+    _password=password;
+    _totalNum=0;
+    _currentNum=0;
+    _async=true;
+    
+    unz_global_info globalInfo = {0};
+    std::string fullFileName=FileUtils::getInstance()->fullPathForFilename(_fileName);
+    unzFile _unzFile = cocos2d::unzOpen(fullFileName.c_str());
+    if (_unzFile){
+        unzGetGlobalInfo(_unzFile, &globalInfo);
+        unzCloseCurrentFile(_unzFile);
+    }
+    
+    auto t = std::thread(&ZipMgr::_unzip, this);
+    t.detach();
+    
+    _totalNum=globalInfo.number_entry;
+    return globalInfo.number_entry;
+}
+
+int ZipMgr::_unzip(){
+    bool success = true;
+    unsigned char buffer[4096] = {0};
+    char fileNameBuf[1024]={0};
+    int ret=0;
+    unz_global_info globalInfo = {0};
+    
+    std::string fullFileName=FileUtils::getInstance()->fullPathForFilename(_fileName);
+    unzFile _unzFile = cocos2d::unzOpen(fullFileName.c_str());
+    if (!_unzFile){
+        CCLOG("startUnzipToPath:unzOpen %s failed",fullFileName.c_str());
+        success=false;
+        return 0;
+    }
+    
+    if (unzGetGlobalInfo(_unzFile, &globalInfo) != UNZ_OK) {
+        CCLOG("startUnzipToPath:unzGetGlobalInfo %s failed",fullFileName.c_str());
+        success=false;
+        return 0;
+    }
+    
+    CCLOG("zipfile %s have entry %lu, unzip to %s",_fileName.c_str(),globalInfo.number_entry,_unzipPath.c_str());
+    _totalNum=globalInfo.number_entry;
+    
+    unzGoToFirstFile(_unzFile);
+    do {
+        if (_password.size() == 0)
+            ret = unzOpenCurrentFile(_unzFile);
+        else
+            ret = unzOpenCurrentFilePassword(_unzFile, _password.c_str());
+        if (ret != UNZ_OK) {
+            if(!_password.size())
+                CCLOG("startUnzipToPath:unzOpenCurrentFile failed");
+            else
+                CCLOG("startUnzipToPath:unzOpenCurrentFilePassword failed");
+            success = false;
+            break;
+        }
+        // reading data and write to file
+        int read ;
+        unz_file_info fileInfo = {0};
+        
+        memset(fileNameBuf, 0, sizeof(fileNameBuf));
+        unzGetCurrentFileInfo(_unzFile, &fileInfo, fileNameBuf, sizeof(fileNameBuf), nullptr, 0, nullptr, 0);
+        
+        std::string fullPath = _unzipPath + StringUtils::format("%s",fileNameBuf);
+        
+        int fileLen=strlen(fileNameBuf);
+        if (fileNameBuf[fileLen - 1] == '/' || fileNameBuf[fileLen - 1] == '\\')
+            FileUtils::getInstance()->createDirectory(fullPath.c_str());
+        else
+        {
+            FILE* fp = fopen(fullPath.c_str(), "wb");
+            if(!fp){
+                success=false;
+                break;
+            }
+            while (true) {
+                read = unzReadCurrentFile(_unzFile, buffer, 4096);
+                if (read > 0) {
+                    fwrite(buffer, read, 1, fp);
+                }
+                else
+                    break;
+            }
+            fclose(fp);
+        }
+        unzCloseCurrentFile(_unzFile);
+        ret = unzGoToNextFile(_unzFile);
+        _currentNum++;
+        if(!_async){
+            onProgress();
+        }
+    } while (ret == UNZ_OK);
+    return  _totalNum;
+}
+
+
+void ZipMgr::onProgress(){
+    jsval valArr[2];
+    valArr[0]=INT_TO_JSVAL(_currentNum);
+    valArr[1]=INT_TO_JSVAL(_totalNum);
+    
+    JS::RootedObject global(_cx, ScriptingCore::getInstance()->getGlobalObject());
+    JSAutoCompartment ac(_cx, global);
+    
+    JS::RootedValue callback(_cx, OBJECT_TO_JSVAL(_jsCallback.ref()));
+    if (!callback.isNull())
+    {
+        JS::RootedValue retval(_cx);
+        JS_CallFunctionValue(_cx, global, callback, JS::HandleValueArray::fromMarkedLocation(2, valArr), &retval);
+    }
+}
+
+
+
+
+__JSDownloaderDelegator::__JSDownloaderDelegator(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback,JS::HandleObject callbackOnProgress)
 : _cx(cx)
 , _url(url)
 {
     _obj.construct(_cx, obj);
     _jsCallback.construct(_cx, callback);
+    _jsCallbackOnProgress.construct(_cx,callbackOnProgress);
 }
 
 __JSDownloaderDelegator::~__JSDownloaderDelegator()
 {
     _obj.destroyIfConstructed();
     _jsCallback.destroyIfConstructed();
-    _downloader->onTaskError = (nullptr);
-    _downloader->onDataTaskSuccess = (nullptr);
+    if(_downloader){
+        _downloader->onTaskError = (nullptr);
+        _downloader->onDataTaskSuccess = (nullptr);
+        _downloader->onFileTaskSuccess = (nullptr);
+        _downloader->onTaskProgress=(nullptr);
+    }
 }
 
-__JSDownloaderDelegator *__JSDownloaderDelegator::create(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback)
+__JSDownloaderDelegator *__JSDownloaderDelegator::create(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback,JS::HandleObject callbackOnProgress)
 {
-    __JSDownloaderDelegator *delegate = new (std::nothrow) __JSDownloaderDelegator(cx, obj, url, callback);
+    __JSDownloaderDelegator *delegate = new (std::nothrow) __JSDownloaderDelegator(cx, obj, url, callback,callbackOnProgress);
     delegate->autorelease();
     return delegate;
 }
@@ -901,18 +1059,31 @@ void __JSDownloaderDelegator::startDownloadToFile()
 {
     _downloader = std::make_shared<cocos2d::network::Downloader>();
     //        _downloader->setConnectionTimeout(8);
+    
+    _downloader->onTaskProgress = [this](const cocos2d::network::DownloadTask& task,
+                                         int64_t bytesReceived,
+                                         int64_t totalBytesReceived,
+                                         int64_t totalBytesExpected)
+    {
+        //CCLOG("__JSDownloaderDelegator:download file %s error",_url.c_str());
+        this->onProgress(bytesReceived,totalBytesReceived,totalBytesExpected);
+    };
+    
     _downloader->onTaskError = [this](const cocos2d::network::DownloadTask& task,
                                       int errorCode,
                                       int errorCodeInternal,
                                       const std::string& errorStr)
     {
+        CCLOG("__JSDownloaderDelegator:download file %s error",_url.c_str());
         this->onError();
     };
     
     _downloader->onFileTaskSuccess = [this](const cocos2d::network::DownloadTask& task)
     {
+        CCLOG("__JSDownloaderDelegator:download file %s ok",_url.c_str());
         this->onSuccessToFile();
     };
+
     _downloader->createDownloadFileTask(_url,_saveFileName);
 }
 
@@ -1001,6 +1172,23 @@ void __JSDownloaderDelegator::onSuccess(Texture2D *tex)
     }//);
 }
 
+void __JSDownloaderDelegator::onProgress(int64_t bytesReceived,int64_t totalBytesReceived,int64_t totalBytesExpected)
+{
+    JS::RootedObject global(_cx, ScriptingCore::getInstance()->getGlobalObject());
+    JSAutoCompartment ac(_cx, global);
+    
+    JS::RootedValue callbackOnProgress(_cx, OBJECT_TO_JSVAL(_jsCallbackOnProgress.ref()));
+    if (!callbackOnProgress.isNull())
+    {
+        jsval retArray[3];
+        retArray[0]=long_long_to_jsval(_cx, bytesReceived);
+        retArray[1]=long_long_to_jsval(_cx, totalBytesReceived);
+        retArray[2]=long_long_to_jsval(_cx, totalBytesExpected);
+        JS::RootedValue retval(_cx);
+        JS_CallFunctionValue(_cx, global, callbackOnProgress, JS::HandleValueArray::fromMarkedLocation(3, retArray), &retval);
+    }
+}
+
 void __JSDownloaderDelegator::onSuccessToFile()
 {
         JS::RootedObject global(_cx, ScriptingCore::getInstance()->getGlobalObject());
@@ -1009,8 +1197,9 @@ void __JSDownloaderDelegator::onSuccessToFile()
         JS::RootedValue callback(_cx, OBJECT_TO_JSVAL(_jsCallback.ref()));
         if (!callback.isNull())
         {
+            jsval success=BOOLEAN_TO_JSVAL(true);
             JS::RootedValue retval(_cx);
-            JS_CallFunctionValue(_cx, global, callback, JS::HandleValueArray::empty(), &retval);
+            JS_CallFunctionValue(_cx, global, callback, JS::HandleValueArray::fromMarkedLocation(1, &success), &retval);
         }
         release();
 }
@@ -1020,14 +1209,15 @@ bool js_load_remote_image(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    if (argc == 2)
+    if (argc >= 2)
     {
         std::string url;
         bool ok = jsval_to_std_string(cx, args.get(0), &url);
         JSB_PRECONDITION2(ok, cx, false, "js_load_remote_image : Error processing arguments");
         JS::RootedObject callback(cx, args.get(1).toObjectOrNull());
+        JS::RootedObject callbackOnProgress(cx, args.get(2).toObjectOrNull());
         
-        __JSDownloaderDelegator *delegate = __JSDownloaderDelegator::create(cx, obj, url, callback);
+        __JSDownloaderDelegator *delegate = __JSDownloaderDelegator::create(cx, obj, url, callback,callbackOnProgress);
         delegate->downloadAsync();
         
         args.rval().setUndefined();
@@ -1039,34 +1229,122 @@ bool js_load_remote_image(JSContext *cx, uint32_t argc, jsval *vp)
 }
 
 //add by flyingkisser
-// jsb.downloadToFile(url,savePath,function(error) {})
-bool js_download_to_file(JSContext *cx, uint32_t argc, jsval *vp)
+// jsb.downloadToFileAsync(url,savePath,function(success){},function(recv,totalRecv,total) {})
+bool js_download_to_file_async(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
-    if (argc == 3)
+    if (argc >= 3)
     {
         std::string url;
         std::string savePath;
         bool ok = jsval_to_std_string(cx, args.get(0), &url);
-        JSB_PRECONDITION2(ok, cx, false, "js_download_to_file : Error processing arguments");
+        JSB_PRECONDITION2(ok, cx, false, "js_download_to_file_async : Error processing arguments");
         
         ok = jsval_to_std_string(cx, args.get(1), &savePath);
-        JSB_PRECONDITION2(ok, cx, false, "js_download_to_file : Error processing arguments");
+        JSB_PRECONDITION2(ok, cx, false, "js_download_to_file_async : Error processing arguments");
 
         
         JS::RootedObject callback(cx, args.get(2).toObjectOrNull());
+        JS::RootedObject callbackOnProgress(cx, args.get(3).toObjectOrNull());
         
-        __JSDownloaderDelegator *delegate = __JSDownloaderDelegator::create(cx, obj, url, callback);
+        __JSDownloaderDelegator *delegate = __JSDownloaderDelegator::create(cx, obj, url, callback,callbackOnProgress);
         delegate->downloadToFileAsync(savePath);
         
         args.rval().setUndefined();
         return true;
     }
     
-    JS_ReportError(cx, "js_load_remote_image : wrong number of arguments");
+    JS_ReportError(cx, "js_download_to_file_async : wrong number of arguments");
     return false;
 }
+
+
+//jsb.unzipToPath(zipFileName,pathName,password,function(totalUnzipped,total){});
+bool js_unzip_to_path(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    if (argc == 4)
+    {
+        std::string zipFileName;
+        std::string unzipPath;
+        std::string password;
+        bool ok = jsval_to_std_string(cx, args.get(0), &zipFileName);
+        JSB_PRECONDITION2(ok, cx, false, "js_unzip_to_path : Error processing arguments");
+        
+        ok = jsval_to_std_string(cx, args.get(1), &unzipPath);
+        JSB_PRECONDITION2(ok, cx, false, "js_unzip_to_path : Error processing arguments");
+        
+        ok = jsval_to_std_string(cx, args.get(2), &password);
+        JSB_PRECONDITION2(ok, cx, false, "js_unzip_to_path : Error processing arguments");
+        
+        JS::RootedObject callback(cx, args.get(3).toObjectOrNull());
+        
+        int ret=ZipMgr::getInstance()->unzip(cx,obj,zipFileName,unzipPath,password,callback);
+        jsval jsret = JSVAL_NULL;
+        jsret = INT_TO_JSVAL(ret);
+        args.rval().set(jsret);
+        return true;
+    }
+    
+    JS_ReportError(cx, "js_unzip_to_path : wrong number of arguments");
+    return false;
+}
+
+//jsb.unzipToPathAsync(zipFileName,pathName,"");
+bool js_unzip_to_path_async(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    if (argc == 3)
+    {
+        std::string zipFileName;
+        std::string unzipPath;
+        std::string password;
+        bool ok = jsval_to_std_string(cx, args.get(0), &zipFileName);
+        JSB_PRECONDITION2(ok, cx, false, "js_unzip_to_path : Error processing arguments");
+        
+        ok = jsval_to_std_string(cx, args.get(1), &unzipPath);
+        JSB_PRECONDITION2(ok, cx, false, "js_unzip_to_path : Error processing arguments");
+        
+        ok = jsval_to_std_string(cx, args.get(2), &password);
+        JSB_PRECONDITION2(ok, cx, false, "js_unzip_to_path : Error processing arguments");
+        
+        int ret=ZipMgr::getInstance()->unzipAsync(cx,obj,zipFileName,unzipPath,password);
+        
+        jsval jsret = JSVAL_NULL;
+        jsret = INT_TO_JSVAL(ret);
+        args.rval().set(jsret);
+        
+        return true;
+    }
+    
+    JS_ReportError(cx, "js_unzip_to_path : wrong number of arguments");
+    return false;
+}
+
+bool js_unzip_get_progress(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    //JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    int ret=ZipMgr::getInstance()->getCurrentNum();
+    jsval jsret = JSVAL_NULL;
+    jsret = INT_TO_JSVAL(ret);
+    args.rval().set(jsret);
+    return  true;
+}
+bool js_unzip_get_total(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    //JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    int ret=ZipMgr::getInstance()->getTotalNum();
+    jsval jsret = JSVAL_NULL;
+    jsret = INT_TO_JSVAL(ret);
+    args.rval().set(jsret);
+    return  true;
+}
+
 
 extern JSObject* jsb_cocos2d_extension_ScrollView_prototype;
 extern JSObject* jsb_cocos2d_extension_TableView_prototype;
@@ -1111,6 +1389,9 @@ void register_all_cocos2dx_extension_manual(JSContext* cx, JS::HandleObject glob
     JS_DefineFunction(cx, jsbObj, "loadRemoteImg", js_load_remote_image, 2, JSPROP_READONLY | JSPROP_PERMANENT);
     
     //add by flyingkisser
-    JS_DefineFunction(cx, jsbObj, "downloadToFile", js_download_to_file, 3, JSPROP_READONLY | JSPROP_PERMANENT);
-
+    JS_DefineFunction(cx, jsbObj, "downloadToFileAsync", js_download_to_file_async, 3, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsbObj, "unzipToPath", js_unzip_to_path, 4, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsbObj, "unzipToPathAsync", js_unzip_to_path_async, 3, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsbObj, "unzipGetProgress", js_unzip_get_progress, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, jsbObj, "unzipGetTotal", js_unzip_get_total, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 }
