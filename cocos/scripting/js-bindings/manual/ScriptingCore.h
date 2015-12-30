@@ -40,7 +40,7 @@
 #include <assert.h>
 #include <memory>
 
-#define ENGINE_VERSION "Cocos2d-JS v3.9"
+#define ENGINE_VERSION "Cocos2d-JS v3.10"
 
 void js_log(const char *format, ...);
 
@@ -234,7 +234,22 @@ public:
      * @param global    @~english The js global object
      * @return @~english Return true if successfully invoked, otherwise return false.
      */
-    bool evalString(const char *string, jsval *outVal, const char *filename = NULL, JSContext* cx = NULL, JSObject* global = NULL);
+    bool evalString(const char *string, JS::MutableHandleValue outVal, const char *filename, JSContext* cx, JS::HandleObject global);
+    
+    /**@~english
+     * Evaluate the specified js code string
+     * @param string    @~english The string with the javascript code to be evaluated
+     * @param outVal    @~english The jsval that will hold the return value of the evaluation.
+     * @return @~english Return true if successfully invoked, otherwise return false.
+     */
+    bool evalString(const char *string, JS::MutableHandleValue outVal);
+    
+    /**@~english
+     * Evaluate the specified js code string
+     * @param string    @~english The string with the javascript code to be evaluated
+     * @return @~english Return true if successfully invoked, otherwise return false.
+     */
+    bool evalString(const char *string);
     
     /**
      @brief @~english Get script object for the given path
@@ -517,7 +532,7 @@ public:
     void restartVM();
 };
 
-JS::HandleObject NewGlobalObject(JSContext* cx, bool debug = false);
+JSObject* NewGlobalObject(JSContext* cx, bool debug = false);
 
 bool jsb_set_reserved_slot(JSObject *obj, uint32_t idx, jsval value);
 bool jsb_get_reserved_slot(JSObject *obj, uint32_t idx, jsval& ret);
@@ -547,10 +562,17 @@ js_type_class_t *jsb_register_class(JSContext *cx, JSClass *jsClass, JS::HandleO
     return p;
 }
 
+/** creates two new proxies: one associaged with the nativeObj,
+ and another one associated with the JsObj */
 js_proxy_t* jsb_new_proxy(void* nativeObj, JS::HandleObject jsObj);
+/** returns the proxy associated with the Native* */
 js_proxy_t* jsb_get_native_proxy(void* nativeObj);
-js_proxy_t* jsb_get_js_proxy(JS::HandleObject jsObj);
+/** returns the proxy associated with the JSObject* */
+js_proxy_t* jsb_get_js_proxy(JSObject* jsObj);
+/** deprecated: use jsb_remove_proxy(js_proxy_t* proxy) instead */
 void jsb_remove_proxy(js_proxy_t* nativeProxy, js_proxy_t* jsProxy);
+/** removes both the native and js proxies */
+void jsb_remove_proxy(js_proxy_t* proxy);
 
 /**
  * Generic initialization function for subclasses of Ref
@@ -589,25 +611,18 @@ JSObject* jsb_ref_create_jsobject(JSContext *cx, cocos2d::Ref *ref, js_type_clas
  */
 JSObject* jsb_ref_autoreleased_create_jsobject(JSContext *cx, cocos2d::Ref *ref, js_type_class_t *typeClass, const char* debug);
 
+/**
+ It will try to get the associated JSObjct for ref.
+ If it can't find it, it will create a new one associating it to Ref.
+ Call this function for objects that were already created and initialized, when returning `getChild()`
+ */
+JSObject* jsb_ref_get_or_create_jsobject(JSContext *cx, cocos2d::Ref *ref, js_type_class_t *typeClass, const char* debug);
 
 /**
  It will try to get the associated JSObjct for ref.
  If it can't find it, it will create a new one associating it to Ref
+ Call this function for objects that might return an already existing copy when you create them. For example, `Animation3D::create()`;
  */
-JSObject* jsb_ref_get_or_create_jsobject(JSContext *cx, cocos2d::Ref *ref, js_type_class_t *typeClass, const char* debug);
-
-
-template <class T>
-jsval getJSObject(JSContext* cx, T* nativeObj)
-{
-    if (!nativeObj)
-    {
-        return JSVAL_NULL;
-    }
-    js_proxy_t *proxy = js_get_or_create_proxy<T>(cx, nativeObj);
-    return proxy ? OBJECT_TO_JSVAL(proxy->obj) : JSVAL_NULL;
-}
-
-void removeJSObject(JSContext* cx, void* nativeObj);
+JSObject* jsb_ref_autoreleased_get_or_create_jsobject(JSContext *cx, cocos2d::Ref *ref, js_type_class_t *typeClass, const char* debug);
 
 #endif /* __SCRIPTING_CORE_H__ */
