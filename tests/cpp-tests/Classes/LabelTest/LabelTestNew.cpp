@@ -97,6 +97,7 @@ NewLabelTests::NewLabelTests()
     ADD_TEST_CASE(LabelToggleTypeTest);
     ADD_TEST_CASE(LabelSystemFontTest);
     ADD_TEST_CASE(LabelCharMapFontTest);
+    ADD_TEST_CASE(LabelIssue13846Test);
 };
 
 LabelFNTColorAndOpacity::LabelFNTColorAndOpacity()
@@ -2084,6 +2085,7 @@ void LabelLayoutBaseTest::initWrapOption(const cocos2d::Size& size)
     checkBox->setScale(0.5);
     checkBox->setSelected(true);
     checkBox->setName("toggleWrap");
+    checkBox->setEnabled(false);
 
     checkBox->addEventListener([=](Ref* ref, CheckBox::EventType event){
         if (event == CheckBox::EventType::SELECTED) {
@@ -2757,4 +2759,25 @@ std::string LabelCharMapFontTest::title() const
 std::string LabelCharMapFontTest::subtitle() const
 {
     return "";
+}
+
+LabelIssue13846Test::LabelIssue13846Test()
+{
+    auto center = VisibleRect::center();
+    
+    auto label = Label::createWithTTF("12345", "fonts/arial.ttf", 26);
+    label->setPosition(center);
+    addChild(label);
+    
+    label->getLetter(2)->setVisible(false);
+}
+
+std::string LabelIssue13846Test::title() const
+{
+    return "Test for Issue #13846";
+}
+
+std::string LabelIssue13846Test::subtitle() const
+{
+    return "Test hide label's letter,the label should display ‘12 45’ as expected";
 }
