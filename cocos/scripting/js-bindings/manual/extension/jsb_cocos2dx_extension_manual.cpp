@@ -894,18 +894,18 @@ int ZipMgr::_unzip(){
     std::string fullFileName=FileUtils::getInstance()->fullPathForFilename(_fileName);
     unzFile _unzFile = cocos2d::unzOpen(fullFileName.c_str());
     if (!_unzFile){
-        CCLOG("startUnzipToPath:unzOpen %s failed",fullFileName.c_str());
+        CCLOG("ZipMgr::_unzip unzOpen %s failed",fullFileName.c_str());
         success=false;
         return 0;
     }
     
     if (unzGetGlobalInfo(_unzFile, &globalInfo) != UNZ_OK) {
-        CCLOG("startUnzipToPath:unzGetGlobalInfo %s failed",fullFileName.c_str());
+        CCLOG("ZipMgr::_unzip unzGetGlobalInfo %s failed",fullFileName.c_str());
         success=false;
         return 0;
     }
     
-    CCLOG("zipfile %s have entry %lu, unzip to %s",_fileName.c_str(),globalInfo.number_entry,_unzipPath.c_str());
+    CCLOG("ZipMgr::_unzip zipfile %s have entry %lu, unzip to %s",_fileName.c_str(),globalInfo.number_entry,_unzipPath.c_str());
     _totalNum=globalInfo.number_entry;
     
     unzGoToFirstFile(_unzFile);
@@ -916,9 +916,9 @@ int ZipMgr::_unzip(){
             ret = unzOpenCurrentFilePassword(_unzFile, _password.c_str());
         if (ret != UNZ_OK) {
             if(!_password.size())
-                CCLOG("startUnzipToPath:unzOpenCurrentFile failed");
+                CCLOG("ZipMgr::_unzip unzOpenCurrentFile failed");
             else
-                CCLOG("startUnzipToPath:unzOpenCurrentFilePassword failed");
+                CCLOG("ZipMgr::_unzip unzOpenCurrentFilePassword failed");
             success = false;
             break;
         }
@@ -938,6 +938,7 @@ int ZipMgr::_unzip(){
         {
             FILE* fp = fopen(fullPath.c_str(), "wb");
             if(!fp){
+                CCLOG("ZipMgr::_unzip fopen %s failed",fullPath.c_str());
                 success=false;
                 break;
             }

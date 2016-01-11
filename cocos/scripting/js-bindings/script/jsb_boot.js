@@ -95,7 +95,7 @@ cc.AsyncPool = function(srcObj, limit, iterator, onEnd, target){
                     self._onEnd.call(self._onEndTarget, null, self._results);
                 return;
             }
-            self._handleItem();
+            //self._handleItem();
         }.bind(item), self);
     };
 
