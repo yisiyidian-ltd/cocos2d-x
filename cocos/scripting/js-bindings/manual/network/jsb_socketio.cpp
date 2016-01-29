@@ -54,31 +54,31 @@ public:
     
     virtual void onConnect(SIOClient* client)
     {
-        CCLOG("JSB SocketIO::SIODelegate->onConnect method called from native");
+        //CCLOG("JSB SocketIO::SIODelegate->onConnect method called from native");
         this->fireEventToScript(client, "connect", "");
     }
 
     virtual void onMessage(SIOClient* client, const std::string& data)
     {
-        CCLOG("JSB SocketIO::SIODelegate->onMessage method called from native with data: %s", data.c_str());
+        //CCLOG("JSB SocketIO::SIODelegate->onMessage method called from native with data: %s", data.c_str());
         this->fireEventToScript(client, "message", data);
     }
 
     virtual void onClose(SIOClient* client)
     {
-        CCLOG("JSB SocketIO::SIODelegate->onClose method called from native");
+        //CCLOG("JSB SocketIO::SIODelegate->onClose method called from native");
         this->fireEventToScript(client, "disconnect", "");
     }
 
     virtual void onError(SIOClient* client, const std::string& data)
     {
-        CCLOG("JSB SocketIO::SIODelegate->onError method called from native with data: %s", data.c_str());
+        //CCLOG("JSB SocketIO::SIODelegate->onError method called from native with data: %s", data.c_str());
         this->fireEventToScript(client, "error", data);
     }
 
     virtual void fireEventToScript(SIOClient* client, const std::string& eventName, const std::string& data)
     {
-        CCLOG("JSB SocketIO::SIODelegate->fireEventToScript method called from native with name '%s' data: %s", eventName.c_str(), data.c_str());
+        //CCLOG("JSB SocketIO::SIODelegate->fireEventToScript method called from native with name '%s' data: %s", eventName.c_str(), data.c_str());
 
         js_proxy_t * p = jsb_get_native_proxy(client);
         if (!p) return;
@@ -140,7 +140,7 @@ bool js_cocos2dx_SocketIO_constructor(JSContext *cx, uint32_t argc, jsval *vp)
 
 bool js_cocos2dx_SocketIO_connect(JSContext* cx, uint32_t argc, jsval* vp)
 {
-    CCLOG("JSB SocketIO.connect method called");
+    //CCLOG("JSB SocketIO.connect method called");
 
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     if (argc == 1 || argc == 2)
@@ -155,7 +155,7 @@ bool js_cocos2dx_SocketIO_connect(JSContext* cx, uint32_t argc, jsval* vp)
         
         JSB_SocketIODelegate* siodelegate = new (std::nothrow) JSB_SocketIODelegate();
         
-        CCLOG("Calling native SocketIO.connect method");
+        //CCLOG("Calling native SocketIO.connect method");
         SIOClient* ret = SocketIO::connect(url, *siodelegate);
         
         jsval jsret;
@@ -191,7 +191,7 @@ bool js_cocos2dx_SocketIO_connect(JSContext* cx, uint32_t argc, jsval* vp)
 
 bool js_cocos2dx_SocketIO_send(JSContext* cx, uint32_t argc, jsval* vp)
 {
-    CCLOG("JSB SocketIO.send method called");
+    //CCLOG("JSB SocketIO.send method called");
 
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
@@ -209,7 +209,7 @@ bool js_cocos2dx_SocketIO_send(JSContext* cx, uint32_t argc, jsval* vp)
             JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
         } while (0);
 
-        CCLOG("JSB SocketIO send mesage: %s", payload.c_str());
+        //CCLOG("JSB SocketIO send mesage: %s", payload.c_str());
 
         cobj->send(payload);
         return true;
@@ -221,7 +221,7 @@ bool js_cocos2dx_SocketIO_send(JSContext* cx, uint32_t argc, jsval* vp)
 
 bool js_cocos2dx_SocketIO_emit(JSContext* cx, uint32_t argc, jsval* vp)
 {
-    CCLOG("JSB SocketIO.emit method called");
+    //CCLOG("JSB SocketIO.emit method called");
 
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
@@ -244,7 +244,7 @@ bool js_cocos2dx_SocketIO_emit(JSContext* cx, uint32_t argc, jsval* vp)
             JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
         } while (0);
 
-        CCLOG("JSB SocketIO emit event '%s' with payload: %s", eventName.c_str(), payload.c_str());
+        //CCLOG("JSB SocketIO emit event '%s' with payload: %s", eventName.c_str(), payload.c_str());
 
         cobj->emit(eventName, payload);
         return true;
@@ -255,7 +255,7 @@ bool js_cocos2dx_SocketIO_emit(JSContext* cx, uint32_t argc, jsval* vp)
 
 bool js_cocos2dx_SocketIO_disconnect(JSContext* cx, uint32_t argc, jsval* vp)
 {
-    CCLOG("JSB SocketIO.disconnect method called");
+    //CCLOG("JSB SocketIO.disconnect method called");
 
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
@@ -276,7 +276,7 @@ bool js_cocos2dx_SocketIO_disconnect(JSContext* cx, uint32_t argc, jsval* vp)
 
 bool js_cocos2dx_SocketIO_close(JSContext* cx, uint32_t argc, jsval* vp)
 {
-    CCLOG("JSB SocketIO.close method called");
+    //CCLOG("JSB SocketIO.close method called");
 
     if(argc == 0)
     {
@@ -294,7 +294,7 @@ bool js_cocos2dx_SocketIO_close(JSContext* cx, uint32_t argc, jsval* vp)
 
 static bool _js_set_SIOClient_tag(JSContext* cx, uint32_t argc, jsval* vp)
 {
-    CCLOG("JSB SocketIO.setTag method called");
+    //CCLOG("JSB SocketIO.setTag method called");
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject jsobj(cx, args.thisv().toObjectOrNull());
     js_proxy_t *proxy = jsb_get_js_proxy(jsobj);
@@ -317,7 +317,7 @@ static bool _js_set_SIOClient_tag(JSContext* cx, uint32_t argc, jsval* vp)
 
 static bool _js_get_SIOClient_tag(JSContext* cx, uint32_t argc, jsval* vp)
 {
-    CCLOG("JSB SocketIO.getTag method called");
+    //CCLOG("JSB SocketIO.getTag method called");
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject jsobj(cx, args.thisv().toObjectOrNull());
     js_proxy_t *proxy = jsb_get_js_proxy(jsobj);
@@ -338,7 +338,7 @@ static bool _js_get_SIOClient_tag(JSContext* cx, uint32_t argc, jsval* vp)
 
 bool js_cocos2dx_SocketIO_on(JSContext* cx, uint32_t argc, jsval* vp)
 {
-    CCLOG("JSB SocketIO.on method called");
+    //CCLOG("JSB SocketIO.on method called");
 
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
     JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
