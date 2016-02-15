@@ -800,7 +800,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../../ $(SRCROOT)/../../../../cocos $(SRCROOT)/../../../../cocos/base $(SRCROOT)/../../../../cocos/physics $(SRCROOT)/../../../../cocos/math/kazmath $(SRCROOT)/../../../../cocos/2d $(SRCROOT)/../../../../cocos/ui $(SRCROOT)/../../../../cocos/network $(SRCROOT)/../../../../cocos/audio/include $(SRCROOT)/../../../../cocos/editor-support $(SRCROOT)/../../../../extensions $(SRCROOT)/../../../../external $(SRCROOT)/../../../../external/chipmunk/include/chipmunk $(SRCROOT)/../../../../external/lua/luajit/include $(SRCROOT)/../../../../external/lua/tolua $(SRCROOT)/../../../../cocos/scripting/lua-bindings/manual $(SRCROOT)/../../../../cocos/scripting/lua-bindings/auto";
 				VALID_ARCHS = "$(ARCHS_STANDARD_64_BIT)";
@@ -844,6 +844,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../../ $(SRCROOT)/../../../../cocos $(SRCROOT)/../../../../cocos/base $(SRCROOT)/../../../../cocos/physics $(SRCROOT)/../../../../cocos/math/kazmath $(SRCROOT)/../../../../cocos/2d $(SRCROOT)/../../../../cocos/ui $(SRCROOT)/../../../../cocos/network $(SRCROOT)/../../../../cocos/audio/include $(SRCROOT)/../../../../cocos/editor-support $(SRCROOT)/../../../../extensions $(SRCROOT)/../../../../external $(SRCROOT)/../../../../external/chipmunk/include/chipmunk $(SRCROOT)/../../../../external/lua/luajit/include $(SRCROOT)/../../../../external/lua/tolua $(SRCROOT)/../../../../cocos/scripting/lua-bindings/manual $(SRCROOT)/../../../../cocos/scripting/lua-bindings/auto";
 				VALID_ARCHS = "$(ARCHS_STANDARD_64_BIT)";
