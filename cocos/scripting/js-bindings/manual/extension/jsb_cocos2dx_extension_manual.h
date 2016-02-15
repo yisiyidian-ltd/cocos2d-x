@@ -26,11 +26,8 @@
 
 #include "jsapi.h"
 #include "jsfriendapi.h"
-#include "mozilla/Maybe.h"
 #include "cocos/network/CCDownloader.h"
 #include "renderer/CCTexture2D.h"
-
-#include "external/unzip/unzip.h"
 
 class __JSDownloaderDelegator : cocos2d::Ref
 {
@@ -40,8 +37,7 @@ public:
     
     void downloadToFileAsync(std::string &savePath);
     void downloadToFile(std::string &savePath);
-    
-    void unzipToPathAsync(std::string &savePath,std::string& password);
+   
     
     static __JSDownloaderDelegator *create(JSContext *cx, JS::HandleObject obj, const std::string &url, JS::HandleObject callback,JS::HandleObject callbackOnProgress);
 
@@ -51,7 +47,6 @@ protected:
     
     void startDownload();
     void startDownloadToFile();
-    void startUnzipToPath();
     
 private:
     void onSuccess(cocos2d::Texture2D *tex);
@@ -63,10 +58,9 @@ private:
     std::string _saveFileName;
     std::string _password;
     JSContext *_cx;
-    mozilla::Maybe<JS::PersistentRootedObject> _jsCallback;
-    mozilla::Maybe<JS::PersistentRootedObject> _jsCallbackOnProgress;
-
-    mozilla::Maybe<JS::PersistentRootedObject> _obj;
+    JS::Heap<JSObject*> _jsCallback;
+	JS::Heap<JSObject*> _jsCallbackOnProgress;
+    JS::Heap<JSObject*> _obj;
 };
 
 
