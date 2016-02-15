@@ -27,6 +27,7 @@
 #include "cocos2d_specifics.hpp"
 #include "jsb_cocos2dx_auto.hpp"
 #include <thread>
+#include "external/unzip/unzip.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -710,8 +711,11 @@ ZipMgr::ZipMgr()
 
 int ZipMgr::unzip(JSContext *cx, JS::HandleObject obj,std::string &zipFileName,std::string &unzipPath,std::string &password,JS::HandleObject callback){
     _cx=cx;
-    _obj.construct(_cx, obj);
-    _jsCallback.construct(_cx, callback);
+    //_obj.construct(_cx, obj);
+    //_jsCallback.construct(_cx, callback);
+
+    _obj=obj;
+    _jsCallback=callback;
     
     _fileName=zipFileName;
     _unzipPath=unzipPath;
@@ -725,7 +729,8 @@ int ZipMgr::unzip(JSContext *cx, JS::HandleObject obj,std::string &zipFileName,s
 
 int ZipMgr::unzipAsync(JSContext *cx, JS::HandleObject obj,std::string &zipFileName,std::string &unzipPath,std::string &password){
     _cx=cx;
-    _obj.construct(_cx, obj);
+    //_obj.construct(_cx, obj);
+    _obj=obj;
     
     _fileName=zipFileName;
     _unzipPath=unzipPath;

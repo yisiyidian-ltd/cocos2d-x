@@ -80,11 +80,12 @@ protected:
     
 private:
     JSContext *_cx;
-    mozilla::Maybe<JS::PersistentRootedObject> _obj;
+    JS::Heap<JSObject*> _obj;
+    JS::Heap<JSObject*> _jsCallback;
+
     std::string _fileName;
     std::string _unzipPath;
     std::string _password;
-    mozilla::Maybe<JS::PersistentRootedObject> _jsCallback;
     int _totalNum;
     int _currentNum;
     bool _async;
