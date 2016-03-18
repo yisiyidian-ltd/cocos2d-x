@@ -1,13 +1,13 @@
 //
-//  jsb_cocos2dx_sp_manual.h
+//  jsb_cocos2dx_ccsp_manual.h
 //  cocos2d_js_bindings
 //
 //  Created by Joe on 16/2/25.
 //
 //
 
-#ifndef jsb_cocos2dx_sp_manual_h
-#define jsb_cocos2dx_sp_manual_h
+#ifndef jsb_cocos2dx_ccsp_manual_h
+#define jsb_cocos2dx_ccsp_manual_h
 
 
 #include "jsapi.h"
@@ -29,9 +29,9 @@ private:
     mozilla::Maybe<JS::PersistentRootedObject> _obj;
 };
 
-void register_all_cocos2dx_sp_manual(JSContext* cx, JS::HandleObject global);
+void register_all_cocos2dx_ccsp_manual(JSContext* cx, JS::HandleObject global);
 
-#endif /* jsb_cocos2dx_sp_manual_h */
+#endif /* jsb_cocos2dx_ccsp_manual_h */
 
 
 

@@ -14,6 +14,7 @@
 #include "cocosbuilder/js_bindings_ccbreader.h"
 #include "spine/jsb_cocos2dx_spine_manual.h"
 #include "extension/jsb_cocos2dx_extension_manual.h"
+#include "extension/jsb_cocos2dx_ccsp_manual.h"
 #include "localstorage/js_bindings_system_registration.h"
 #include "chipmunk/js_bindings_chipmunk_registration.h"
 #include "jsb_opengl_registration.h"
@@ -53,6 +54,7 @@ int js_module_register()
     // extension can be commented out to reduce the package
     sc->addRegisterCallback(register_all_cocos2dx_extension);
     sc->addRegisterCallback(register_all_cocos2dx_extension_manual);
+    sc->addRegisterCallback(register_all_cocos2dx_ccsp_manual);
     
     // chipmunk can be commented out to reduce the package
     sc->addRegisterCallback(jsb_register_chipmunk);

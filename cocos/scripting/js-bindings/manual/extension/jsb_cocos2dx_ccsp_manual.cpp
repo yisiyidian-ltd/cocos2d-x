@@ -1,5 +1,5 @@
 //
-//  jsb_cocos2dx_sp_manual.cpp
+//  jsb_cocos2dx_ccsp_manual.cpp
 //  cocos2d_js_bindings
 //
 //  Created by Joe on 16/2/25.
@@ -14,7 +14,7 @@
 #include "cocos2d_specifics.hpp"
 #include "jsb_cocos2dx_auto.hpp"
 #include <thread>
-#
+
 
 USING_NS_CC;
 USING_NS_CC_EXT;
@@ -48,17 +48,21 @@ bool FileMgr::copyFile(JSContext *cx, JS::HandleObject obj,std::string &srcFullP
     }
     
     int writeSize=0;
-    if(fileSize<=1024*10)
+    int onceWrite=1024*1000;
+    if(fileSize<=onceWrite)
         fwrite(buf,1,fileSize,hFile);
     else{
+        auto wsize=onceWrite;
         while (writeSize<fileSize) {
-            auto size=fwrite(buf,1,1024*10,hFile);
+            wsize= wsize>fileSize-writeSize ? fileSize-writeSize : onceWrite;
+            auto size=fwrite(&buf[writeSize],1,wsize,hFile);
             writeSize+=size;
-            CCLOG("write size %d total %d %d",(unsigned int)size,writeSize,fileSize);
+            CCLOG("FileMgr::copyFile write size %d total %d %d",(unsigned int)size,writeSize,fileSize);
         }
     }
     fclose(hFile);
     free(buf);
+    CCLOG("FileMgr::copyFile copy file to %s ok",dstFullPath.c_str());
     return  true;
 }
 
@@ -89,12 +93,13 @@ bool js_copy_file(JSContext *cx, uint32_t argc, jsval *vp)
 }
 
 
-
-
 void register_all_cocos2dx_ccsp_manual(JSContext* cx, JS::HandleObject global)
 {
-    JS::RootedObject ccspObj(cx);
-    get_or_create_js_obj(cx, global, "ccsp", &ccspObj);
-    JS_DefineFunction(cx, ccspObj, "copyFile", js_copy_file, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS::RootedObject jsbObj(cx);
+    JS::RootedObject fileMgrObj(cx);
+
+    get_or_create_js_obj(cx, global, "jsb", &jsbObj);
+    get_or_create_js_obj(cx, jsbObj, "fileMgr", &fileMgrObj);
+    JS_DefineFunction(cx, fileMgrObj, "copyFile", js_copy_file, 2, JSPROP_READONLY | JSPROP_PERMANENT);
     
 }
