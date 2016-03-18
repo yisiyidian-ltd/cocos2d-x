@@ -1403,4 +1403,5 @@ void register_all_cocos2dx_extension_manual(JSContext* cx, JS::HandleObject glob
     JS_DefineFunction(cx, jsbObj, "unzipToPathAsync", js_unzip_to_path_async, 3, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, jsbObj, "unzipGetProgress", js_unzip_get_progress, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, jsbObj, "unzipGetTotal", js_unzip_get_total, 0, JSPROP_READONLY | JSPROP_PERMANENT);
+
 }

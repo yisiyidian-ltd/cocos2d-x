@@ -91,7 +91,6 @@ private:
     bool _async;
 };
 
-
 void register_all_cocos2dx_extension_manual(JSContext* cx, JS::HandleObject global);
 
 #endif /* defined(__jsb_cocos2dx_extension_manual__) */
