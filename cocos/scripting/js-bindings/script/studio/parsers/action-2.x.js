@@ -46,6 +46,7 @@
 
             //The process of analysis
             var timelines = json["Timelines"];
+            var findTimeline=false;
             timelines.forEach(function(timeline){
                 var parser = self.parsers[timeline["Property"]];
                 var frame;
@@ -55,11 +56,18 @@
                     cc.log("parser does not exist : %s", timeline["Property"]);
                 if(frame)
                     action.addTimeline(frame);
+                //cc.log("add frame for %s",file);
+                findTimeline=true;
             });
 
-            cache[file] = action;
-            cache[file].retain();
-            return action.clone();
+            if(findTimeline){
+                cache[file] = action;
+                cache[file].retain();
+                return action.clone();
+            }else {
+                //cc.log("action is null for %s",file);
+                return null;
+            }
         },
 
         deferred: function(json, resourcePath, action, file){
@@ -72,6 +80,7 @@
                 info.startIndex = animationdata["StartIndex"];
                 info.endIndex = animationdata["EndIndex"];
                 action.addAnimationInfo(info);
+                //cc.log("add animation %s for %s",info.name,file);
             }
         }
 
