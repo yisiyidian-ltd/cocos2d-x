@@ -230,6 +230,12 @@ void MenuItemLabel::setString(const std::string& label)
     this->setContentSize(_label->getContentSize());
 }
 
+std::string MenuItemLabel::getString() const
+{
+    auto label = dynamic_cast<LabelProtocol*>(_label);
+    return label->getString();
+}
+
 void MenuItemLabel::activate()
 {
     if(_enabled)
@@ -784,10 +790,16 @@ MenuItemToggle * MenuItemToggle::createWithTarget(Ref* target, SEL_MenuHandler s
     MenuItemToggle *ret = new (std::nothrow) MenuItemToggle();
     ret->MenuItem::initWithCallback(std::bind(selector, target, std::placeholders::_1));
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    for (const auto &item : menuItems)
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+    if (sEngine)
     {
-        if (item)
-            ScriptEngineManager::getInstance()->getScriptEngine()->retainScriptObject(ret, item);
+        for (const auto &item : menuItems)
+        {
+            if (item)
+            {
+                sEngine->retainScriptObject(ret, item);
+            }
+        }
     }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     ret->_subItems = menuItems;
@@ -801,10 +813,16 @@ MenuItemToggle * MenuItemToggle::createWithCallback(const ccMenuCallback &callba
     MenuItemToggle *ret = new (std::nothrow) MenuItemToggle();
     ret->MenuItem::initWithCallback(callback);
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    for (const auto &item : menuItems)
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+    if (sEngine)
     {
-        if (item)
-            ScriptEngineManager::getInstance()->getScriptEngine()->retainScriptObject(ret, item);
+        for (const auto &item : menuItems)
+        {
+            if (item)
+            {
+                sEngine->retainScriptObject(ret, item);
+            }
+        }
     }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     ret->_subItems = menuItems;
@@ -869,11 +887,19 @@ bool MenuItemToggle::initWithCallback(const ccMenuCallback &callback, MenuItem *
 
     int z = 0;
     MenuItem *i = item;
+    
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    
     while(i)
     {
         z++;
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-        ScriptEngineManager::getInstance()->getScriptEngine()->retainScriptObject(this, i);
+        if (sEngine)
+        {
+            sEngine->retainScriptObject(this, i);
+        }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         _subItems.pushBack(i);
         i = va_arg(args, MenuItem*);
@@ -911,7 +937,11 @@ bool MenuItemToggle::initWithItem(MenuItem *item)
 void MenuItemToggle::addSubItem(MenuItem *item)
 {
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    ScriptEngineManager::getInstance()->getScriptEngine()->retainScriptObject(this, item);
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+    if (sEngine)
+    {
+        sEngine->retainScriptObject(this, item);
+    }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _subItems.pushBack(item);
 }

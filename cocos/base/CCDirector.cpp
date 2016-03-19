@@ -91,6 +91,7 @@ const char *Director::EVENT_AFTER_DRAW = "director_after_draw";
 const char *Director::EVENT_AFTER_VISIT = "director_after_visit";
 const char *Director::EVENT_BEFORE_UPDATE = "director_before_update";
 const char *Director::EVENT_AFTER_UPDATE = "director_after_update";
+const char *Director::EVENT_RESET = "director_reset";
 
 Director* Director::getInstance()
 {
@@ -164,6 +165,7 @@ bool Director::init(void)
     _eventAfterUpdate->setUserData(this);
     _eventProjectionChanged = new (std::nothrow) EventCustom(EVENT_PROJECTION_CHANGED);
     _eventProjectionChanged->setUserData(this);
+    _eventResetDirector = new (std::nothrow) EventCustom(EVENT_RESET);
     //init TextureCache
     initTextureCache();
     initMatrixStack();
@@ -193,6 +195,7 @@ Director::~Director(void)
     delete _eventAfterDraw;
     delete _eventAfterVisit;
     delete _eventProjectionChanged;
+    delete _eventResetDirector;
 
     delete _renderer;
 
@@ -828,8 +831,11 @@ void Director::replaceScene(Scene *scene)
     _sendCleanupToScene = true;
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
-    sEngine->retainScriptObject(this, scene);
-    sEngine->releaseScriptObject(this, _scenesStack.at(index));
+    if (sEngine)
+    {
+        sEngine->retainScriptObject(this, scene);
+        sEngine->releaseScriptObject(this, _scenesStack.at(index));
+    }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _scenesStack.replace(index, scene);
 
@@ -843,7 +849,11 @@ void Director::pushScene(Scene *scene)
     _sendCleanupToScene = false;
 
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    ScriptEngineManager::getInstance()->getScriptEngine()->retainScriptObject(this, scene);
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+    if (sEngine)
+    {
+        sEngine->retainScriptObject(this, scene);
+    }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _scenesStack.pushBack(scene);
     _nextScene = scene;
@@ -854,7 +864,11 @@ void Director::popScene(void)
     CCASSERT(_runningScene != nullptr, "running scene should not null");
     
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    ScriptEngineManager::getInstance()->getScriptEngine()->releaseScriptObject(this, _scenesStack.back());
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+    if (sEngine)
+    {
+        sEngine->releaseScriptObject(this, _scenesStack.back());
+    }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _scenesStack.popBack();
     ssize_t c = _scenesStack.size();
@@ -895,7 +909,11 @@ void Director::popToSceneStackLevel(int level)
     if (fisrtOnStackScene == _runningScene)
     {
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-        ScriptEngineManager::getInstance()->getScriptEngine()->releaseScriptObject(this, _scenesStack.back());
+        auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+        if (sEngine)
+        {
+            sEngine->releaseScriptObject(this, _scenesStack.back());
+        }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         _scenesStack.popBack();
         --c;
@@ -913,7 +931,11 @@ void Director::popToSceneStackLevel(int level)
 
         current->cleanup();
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-        ScriptEngineManager::getInstance()->getScriptEngine()->releaseScriptObject(this, _scenesStack.back());
+        auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+        if (sEngine)
+        {
+            sEngine->releaseScriptObject(this, _scenesStack.back());
+        }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         _scenesStack.popBack();
         --c;
@@ -936,11 +958,18 @@ void Director::restart()
 }
 
 void Director::reset()
-{    
+{
+#if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    auto sEngine = ScriptEngineManager::getInstance()->getScriptEngine();
+#endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
+    
     if (_runningScene)
     {
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-        ScriptEngineManager::getInstance()->getScriptEngine()->releaseScriptObject(this, _runningScene);
+        if (sEngine)
+        {
+            sEngine->releaseScriptObject(this, _runningScene);
+        }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
         _runningScene->onExit();
         _runningScene->cleanup();
@@ -950,6 +979,8 @@ void Director::reset()
     _runningScene = nullptr;
     _nextScene = nullptr;
 
+    _eventDispatcher->dispatchEvent(_eventResetDirector);
+    
     // cleanup scheduler
     getScheduler()->unscheduleAll();
     
@@ -962,11 +993,13 @@ void Director::reset()
     // remove all objects, but don't release it.
     // runWithScene might be executed after 'end'.
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
-    auto engine = ScriptEngineManager::getInstance()->getScriptEngine();
-    for (const auto &scene : _scenesStack)
+    if (sEngine)
     {
-        if (scene)
-            engine->releaseScriptObject(this, scene);
+        for (const auto &scene : _scenesStack)
+        {
+            if (scene)
+                sEngine->releaseScriptObject(this, scene);
+        }
     }
 #endif // CC_ENABLE_GC_FOR_NATIVE_OBJECTS
     _scenesStack.clear();
@@ -1005,7 +1038,7 @@ void Director::reset()
     GLProgramCache::destroyInstance();
     GLProgramStateCache::destroyInstance();
     FileUtils::destroyInstance();
-    AsyncTaskPool::destoryInstance();
+    AsyncTaskPool::destroyInstance();
     
     // cocos2d-x specific data structures
     UserDefault::destroyInstance();
@@ -1049,6 +1082,9 @@ void Director::restartDirector()
     
     // release the objects
     PoolManager::getInstance()->getCurrentPool()->clear();
+
+    // Restart animation
+    startAnimation();
     
     // Real restart in script level
 #if CC_ENABLE_SCRIPT_BINDING
