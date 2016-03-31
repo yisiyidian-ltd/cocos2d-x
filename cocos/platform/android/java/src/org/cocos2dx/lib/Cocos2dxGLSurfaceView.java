@@ -215,18 +215,17 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 
         switch (pMotionEvent.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_POINTER_DOWN:
-                if (pointerNumber > 1) return false;
-                final int indexPointerDown = pMotionEvent.getAction() >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                final int idPointerDown = pMotionEvent.getPointerId(indexPointerDown);
-                final float xPointerDown = pMotionEvent.getX(indexPointerDown);
-                final float yPointerDown = pMotionEvent.getY(indexPointerDown);
+                // final int indexPointerDown = pMotionEvent.getAction() >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                // final int idPointerDown = pMotionEvent.getPointerId(indexPointerDown);
+                // final float xPointerDown = pMotionEvent.getX(indexPointerDown);
+                // final float yPointerDown = pMotionEvent.getY(indexPointerDown);
 
-                this.queueEvent(new Runnable() {
-                    @Override
-                    public void run() {
-                        Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleActionDown(idPointerDown, xPointerDown, yPointerDown);
-                    }
-                });
+                // this.queueEvent(new Runnable() {
+                //     @Override
+                //     public void run() {
+                //         Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleActionDown(idPointerDown, xPointerDown, yPointerDown);
+                //     }
+                // });
                 break;
 
             case MotionEvent.ACTION_DOWN:
@@ -253,18 +252,17 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
                 break;
 
             case MotionEvent.ACTION_POINTER_UP:
-                if (pointerNumber > 1) return false;
-                final int indexPointUp = pMotionEvent.getAction() >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
-                final int idPointerUp = pMotionEvent.getPointerId(indexPointUp);
-                final float xPointerUp = pMotionEvent.getX(indexPointUp);
-                final float yPointerUp = pMotionEvent.getY(indexPointUp);
+                // final int indexPointUp = pMotionEvent.getAction() >> MotionEvent.ACTION_POINTER_INDEX_SHIFT;
+                // final int idPointerUp = pMotionEvent.getPointerId(indexPointUp);
+                // final float xPointerUp = pMotionEvent.getX(indexPointUp);
+                // final float yPointerUp = pMotionEvent.getY(indexPointUp);
 
-                this.queueEvent(new Runnable() {
-                    @Override
-                    public void run() {
-                        Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleActionUp(idPointerUp, xPointerUp, yPointerUp);
-                    }
-                });
+                // this.queueEvent(new Runnable() {
+                //     @Override
+                //     public void run() {
+                //         Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleActionUp(idPointerUp, xPointerUp, yPointerUp);
+                //     }
+                // });
                 break;
 
             case MotionEvent.ACTION_UP:
