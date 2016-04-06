@@ -60,7 +60,7 @@ public:
 
     virtual void onMessage(SIOClient* client, const std::string& data)
     {
-        CCLOG("JSB SocketIO::SIODelegate->onMessage method called from native with data: %s", data.c_str());
+        //CCLOG("JSB SocketIO::SIODelegate->onMessage method called from native with data: %s", data.c_str());
         this->fireEventToScript(client, "message", data);
     }
 
@@ -78,7 +78,7 @@ public:
 
     virtual void fireEventToScript(SIOClient* client, const std::string& eventName, const std::string& data)
     {
-        CCLOG("JSB SocketIO::SIODelegate->fireEventToScript method called from native with name '%s' data: %s", eventName.c_str(), data.c_str());
+        //CCLOG("JSB SocketIO::SIODelegate->fireEventToScript method called from native with name '%s' data: %s", eventName.c_str(), data.c_str());
 
         js_proxy_t * p = jsb_get_native_proxy(client);
         if (!p) return;
@@ -209,7 +209,7 @@ bool js_cocos2dx_SocketIO_send(JSContext* cx, uint32_t argc, jsval* vp)
             JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
         } while (0);
 
-        CCLOG("JSB SocketIO send mesage: %s", payload.c_str());
+        //CCLOG("JSB SocketIO send mesage: %s", payload.c_str());
 
         cobj->send(payload);
         return true;
@@ -244,7 +244,7 @@ bool js_cocos2dx_SocketIO_emit(JSContext* cx, uint32_t argc, jsval* vp)
             JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
         } while (0);
 
-        CCLOG("JSB SocketIO emit event '%s' with payload: %s", eventName.c_str(), payload.c_str());
+        //CCLOG("JSB SocketIO emit event '%s' with payload: %s", eventName.c_str(), payload.c_str());
 
         cobj->emit(eventName, payload);
         return true;
@@ -355,7 +355,7 @@ bool js_cocos2dx_SocketIO_on(JSContext* cx, uint32_t argc, jsval* vp)
             JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
         } while (0);
 
-        CCLOG("JSB SocketIO eventName to: '%s'", eventName.c_str());
+        //CCLOG("JSB SocketIO eventName to: '%s'", eventName.c_str());
         
         std::shared_ptr<JSFunctionWrapper> callback(new JSFunctionWrapper(cx, obj, args.get(1)));
 
