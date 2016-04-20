@@ -126,9 +126,9 @@ project.properties
 *.iml
 
 # Ignore prebuilt libraries folder
-/external/*
-!/external/config.json
-!/external/json/document.h
+#/external/*
+#!/external/config.json
+#!/external/json/document.h
 /templates/lua-template-runtime/runtime
 /v*-deps-*.zip
 /v*-lua-runtime-*.zip
