@@ -32,16 +32,56 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-
+import android.util.Log;
 public class AppActivity extends Cocos2dxActivity {
     
     private static AppActivity app = null;
+    private static final String TAG = AppActivity.class.getName();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         app = this;
+        Log.d(TAG, "Cocos2dxActivity:onCreate begin");
     }
+
+@Override
+    protected void onStart() {
+        Log.d(TAG, "Cocos2dxActivity:onStart begin");
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "Cocos2dxActivity:onResume begin");
+        //mTencent = Tencent.createInstance(s_QQ_APPID, getApplicationContext());
+        //PluginWrapper.onResume();
+        super.onResume();
+        
+    }
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "Cocos2dxActivity:onPause begin");
+        //PluginWrapper.onPause();
+        super.onPause();
+    }
+
+    @Override
+    protected void onStop() {
+        Log.d(TAG, "Cocos2dxActivity:onStop begin");
+        //PluginWrapper.onStop();
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.d(TAG, "Cocos2dxActivity:onDestroy begin");
+        //PluginWrapper.onDestroy();
+        super.onDestroy();
+
+    }
+
 
     @Override
     public Cocos2dxGLSurfaceView onCreateView() {
