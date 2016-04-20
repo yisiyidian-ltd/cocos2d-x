@@ -1,11 +1,11 @@
-#include "jsb_cocos2dx_experimental_video_manual.h"
+#include "scripting/js-bindings/manual/experimental/jsb_cocos2dx_experimental_video_manual.h"
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 
-#include "UIVideoPlayer.h"
-#include "ScriptingCore.h"
-#include "cocos2d_specifics.hpp"
-#include "cocos2d.h"
+#include "ui/UIVideoPlayer.h"
+#include "scripting/js-bindings/manual/ScriptingCore.h"
+#include "scripting/js-bindings/manual/cocos2d_specifics.hpp"
+
 
 using namespace cocos2d;
 

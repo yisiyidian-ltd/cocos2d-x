@@ -23,16 +23,17 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "CCDictionary.h"
+#include "deprecated/CCDictionary.h"
+#include <type_traits>
 #include "deprecated/CCString.h"
-#include "CCInteger.h"
+#include "deprecated/CCInteger.h"
 #include "platform/CCFileUtils.h"
 #include "deprecated/CCString.h"
-#include "CCBool.h"
-#include "CCInteger.h"
-#include "CCFloat.h"
-#include "CCDouble.h"
-#include "CCArray.h"
+#include "deprecated/CCBool.h"
+#include "deprecated/CCInteger.h"
+#include "deprecated/CCFloat.h"
+#include "deprecated/CCDouble.h"
+#include "deprecated/CCArray.h"
 
 using namespace std;
 
@@ -584,7 +585,7 @@ __Dictionary* __Dictionary::clone() const
             }
             else
             {
-                CCLOGWARN("%s isn't clonable.", typeid(*element->getObject()).name());
+                CCLOGWARN("%s isn't clonable.", typeid(std::remove_pointer<decltype(element->getObject())>::type).name());
             }
         }
     }
@@ -603,7 +604,7 @@ __Dictionary* __Dictionary::clone() const
             }
             else
             {
-                CCLOGWARN("%s isn't clonable.", typeid(*element->getObject()).name());
+                CCLOGWARN("%s isn't clonable.", typeid(std::remove_pointer<decltype(element->getObject())>::type).name());
             }
         }
     }

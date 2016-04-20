@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#include "CCAutoPolygon.h"
+#include "2d/CCAutoPolygon.h"
 #include "poly2tri/poly2tri.h"
 #include "base/CCDirector.h"
 #include "renderer/CCTextureCache.h"
@@ -435,7 +435,7 @@ std::vector<cocos2d::Vec2> AutoPolygon::rdp(std::vector<cocos2d::Vec2> v, const 
         if(cdist > dist)
         {
             dist = cdist;
-            index = i;
+            index = static_cast<int>(i);
         }
     }
     if (dist>optimization)

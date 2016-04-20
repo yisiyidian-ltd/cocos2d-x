@@ -1,11 +1,13 @@
 
 
-#include "TextReader.h"
+#include "editor-support/cocostudio/WidgetReader/TextReader/TextReader.h"
 
 #include "ui/UIText.h"
-#include "cocostudio/CocoLoader.h"
-#include "cocostudio/CSParseBinary_generated.h"
-#include "cocostudio/LocalizationManager.h"
+#include "platform/CCFileUtils.h"
+
+#include "editor-support/cocostudio/CocoLoader.h"
+#include "editor-support/cocostudio/CSParseBinary_generated.h"
+#include "editor-support/cocostudio/LocalizationManager.h"
 
 #include "tinyxml2.h"
 #include "flatbuffers/flatbuffers.h"
@@ -380,7 +382,6 @@ namespace cocostudio
                                          builder->CreateString(fontName),
                                          fontSize,
                                          builder->CreateString(text),
-                                         isLocalized,
                                          areaWidth,
                                          areaHeight,
                                          h_alignment,
@@ -394,7 +395,8 @@ namespace cocostudio
                                          &f_shadowColor,
                                          shadowOffset.width,
                                          shadowOffset.height,
-                                         shadowBlurRadius);
+                                         shadowBlurRadius,
+                                         isLocalized);
         
         return *(Offset<Table>*)(&options);
     }

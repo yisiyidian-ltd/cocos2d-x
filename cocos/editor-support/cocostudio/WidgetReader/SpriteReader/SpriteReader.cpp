@@ -22,11 +22,16 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#include "SpriteReader.h"
+#include "editor-support/cocostudio/WidgetReader/SpriteReader/SpriteReader.h"
 
-#include "cocostudio/CSParseBinary_generated.h"
-#include "cocostudio/FlatBuffersSerialize.h"
-#include "cocostudio/WidgetReader/NodeReader/NodeReader.h"
+#include "2d/CCSprite.h"
+#include "2d/CCSpriteFrameCache.h"
+#include "platform/CCFileUtils.h"
+
+#include "editor-support/cocostudio/CSParseBinary_generated.h"
+#include "editor-support/cocostudio/FlatBuffersSerialize.h"
+#include "editor-support/cocostudio/WidgetReader/NodeReader/NodeReader.h"
+
 
 #include "tinyxml2.h"
 #include "flatbuffers/flatbuffers.h"

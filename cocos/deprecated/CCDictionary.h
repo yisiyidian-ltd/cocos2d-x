@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 #include "base/uthash.h"
 #include "base/CCRef.h"
-#include "CCArray.h"
+#include "deprecated/CCArray.h"
 #include "deprecated/CCString.h"
 
 NS_CC_BEGIN
@@ -420,7 +420,7 @@ public:
      *  @js NA
      *  @lua NA
      */
-    virtual __Dictionary* clone() const;
+    virtual __Dictionary* clone() const override;
     
 private:
     /** 

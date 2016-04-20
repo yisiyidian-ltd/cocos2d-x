@@ -25,7 +25,7 @@ _spawnCount(5), //swpanCount should > listview.width / tempalteWidth + 2
 _totalCount(50),
 _bufferZone(45), //bufferZone should be larger than List item width
 _updateTimer(0),
-_updateInterval(1.0 / 24), // you could tweak this value to adjust ListView data update rate
+_updateInterval(1.0f / 24), // you could tweak this value to adjust ListView data update rate
 _lastContentPosY(0), //use this value to detect if we are scrolling left or right
 _itemTemplateHeight(0)
 {
@@ -243,14 +243,14 @@ void UIListViewTest_Vertical::selectedItemEvent(Ref *pSender, ListView::EventTyp
         {
             ListView* listView = static_cast<ListView*>(pSender);
             auto item = listView->getItem(listView->getCurSelectedIndex());
-            CCLOG("select child start index = %d", item->getTag());
+            log("select child start index = %d", item->getTag());
             break;
         }
         case cocos2d::ui::ListView::EventType::ON_SELECTED_ITEM_END:
         {
             ListView* listView = static_cast<ListView*>(pSender);
             auto item = listView->getItem(listView->getCurSelectedIndex());
-            CCLOG("select child end index = %d", item->getTag());
+            log("select child end index = %d", item->getTag());
             break;
         }
         default:
@@ -281,7 +281,7 @@ _spawnCount(4), //swpanCount should > listview.width / tempalteWidth + 2
 _totalCount(50),
 _bufferZone(140), //bufferZone should be larger than List item width
 _updateTimer(0),
-_updateInterval(1.0 / 24), // you could tweak this value to adjust ListView data update rate
+_updateInterval(1.0f / 24), // you could tweak this value to adjust ListView data update rate
 _lastContentPosX(0), //use this value to detect if we are scrolling left or right
 _itemTemplateWidth(0)
 {
@@ -458,14 +458,14 @@ void UIListViewTest_Horizontal::selectedItemEvent(Ref *pSender, ListView::EventT
         {
             ListView* listView = static_cast<ListView*>(pSender);
             auto item = listView->getItem(listView->getCurSelectedIndex());
-            CCLOG("select child start index = %d", item->getTag());
+            log("select child start index = %d", item->getTag());
             break;
         }
         case cocos2d::ui::ListView::EventType::ON_SELECTED_ITEM_END:
         {
             ListView* listView = static_cast<ListView*>(pSender);
             auto item = listView->getItem(listView->getCurSelectedIndex());
-            CCLOG("select child end index = %d", item->getTag());
+            log("select child end index = %d", item->getTag());
             break;
         }
         default:

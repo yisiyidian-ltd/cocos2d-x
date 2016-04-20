@@ -1,6 +1,6 @@
 #include "UIRichTextTest.h"
-#include "cocostudio/CCArmatureDataManager.h"
-#include "cocostudio/CCArmature.h"
+#include "editor-support/cocostudio/CCArmatureDataManager.h"
+#include "editor-support/cocostudio/CCArmature.h"
 
 USING_NS_CC;
 using namespace cocos2d::ui;
@@ -39,12 +39,12 @@ bool UIRichTextTest::init()
         std::string str2 = config->getValue("Japanese").asString();
         CCLOG("str1:%s ascii length = %ld, utf8 length = %ld, substr = %s",
               str1.c_str(),
-              str1.length(),
+              static_cast<long>(str1.length()),
               StringUtils::getCharacterCountInUTF8String(str1),
               Helper::getSubStringOfUTF8String(str1, 0, 5).c_str());
         CCLOG("str2:%s ascii length = %ld, utf8 length = %ld, substr = %s",
               str2.c_str(),
-              str2.length(),
+              static_cast<long>(str2.length()),
               StringUtils::getCharacterCountInUTF8String(str2),
               Helper::getSubStringOfUTF8String(str2, 0, 2).c_str());
         

@@ -3495,6 +3495,15 @@ reverse : function (
     return cc.Action;
 },
 
+/**
+ * @method Action
+ * @constructor
+ */
+Action : function (
+)
+{
+},
+
 };
 
 /**
@@ -21986,7 +21995,7 @@ cc.TextFieldTTF = {
 
 /**
  * @method getCharCount
- * @return {int}
+ * @return {unsigned long}
  */
 getCharCount : function (
 )
@@ -22059,6 +22068,26 @@ float
  * @param {String} arg0
  */
 appendString : function (
+str 
+)
+{
+},
+
+/**
+ * @method getPasswordTextStyle
+ * @return {String}
+ */
+getPasswordTextStyle : function (
+)
+{
+    return ;
+},
+
+/**
+ * @method setPasswordTextStyle
+ * @param {String} arg0
+ */
+setPasswordTextStyle : function (
 str 
 )
 {

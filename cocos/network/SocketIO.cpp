@@ -27,14 +27,14 @@
 
  ****************************************************************************/
 
-#include "SocketIO.h"
+#include "network/SocketIO.h"
 #include <algorithm>
 #include <sstream>
 #include <iterator>
 #include "base/CCDirector.h"
 #include "base/CCScheduler.h"
-#include "WebSocket.h"
-#include "HttpClient.h"
+#include "network/WebSocket.h"
+#include "network/HttpClient.h"
 
 #include "json/rapidjson.h"
 #include "json/document.h"
@@ -1007,7 +1007,7 @@ void SIOClientImpl::onClose(WebSocket* ws)
 void SIOClientImpl::onError(WebSocket* ws, const WebSocket::ErrorCode& error)
 {
     CC_UNUSED_PARAM(ws);
-    CCLOGERROR("Websocket error received: %d", error);
+    CCLOGERROR("Websocket error received: %d", static_cast<int>(error));
 }
 
 //begin SIOClient methods

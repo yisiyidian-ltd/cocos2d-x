@@ -2,8 +2,12 @@
  * @author cesarpachon
  */ 
 #include <cstring>
-#include "AudioEngine-linux.h"
-#include "cocos2d.h"
+#include "audio/linux/AudioEngine-linux.h"
+
+#include "base/CCDirector.h"
+#include "base/CCScheduler.h"
+#include "platform/CCFileUtils.h"
+
 using namespace cocos2d;
 using namespace cocos2d::experimental;
 

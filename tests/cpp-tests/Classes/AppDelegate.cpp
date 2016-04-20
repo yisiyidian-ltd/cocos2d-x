@@ -27,7 +27,7 @@
 
 #include "cocos2d.h"
 #include "controller.h"
-#include "cocostudio/CocoStudio.h"
+#include "editor-support/cocostudio/CocoStudio.h"
 #include "extensions/cocos-ext.h"
 
 USING_NS_CC;
@@ -70,7 +70,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     }
 
     director->setDisplayStats(true);
-    director->setAnimationInterval(1.0 / 60);
+    director->setAnimationInterval(1.0f / 60);
 
     auto screenSize = glview->getFrameSize();
     auto designSize = Size(480, 320);

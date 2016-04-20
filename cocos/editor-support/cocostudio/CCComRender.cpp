@@ -22,8 +22,13 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#include "cocostudio/CCComRender.h"
-#include "cocostudio/CocoStudio.h"
+#include "editor-support/cocostudio/CCComRender.h"
+#include "editor-support/cocostudio/CocoStudio.h"
+
+#include "platform/CCFileUtils.h"
+#include "2d/CCTMXTiledMap.h"
+#include "2d/CCParticleSystemQuad.h"
+#include "2d/CCSpriteFrameCache.h"
 
 using namespace cocos2d;
 
