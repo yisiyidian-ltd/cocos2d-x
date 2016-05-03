@@ -355,7 +355,7 @@ bool js_cocos2dx_SocketIO_on(JSContext* cx, uint32_t argc, jsval* vp)
             JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
         } while (0);
 
-        CCLOG("JSB SocketIO eventName to: '%s'", eventName.c_str());
+        //CCLOG("JSB SocketIO eventName to: '%s'", eventName.c_str());
         
         std::shared_ptr<JSFunctionWrapper> callback(new JSFunctionWrapper(cx, obj, args.get(1), args.thisv()));
 

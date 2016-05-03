@@ -27,6 +27,9 @@ import android.opengl.GLSurfaceView;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import android.util.Log;
+
 public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     // ===========================================================
     // Constants
@@ -61,14 +64,21 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     public void setScreenWidthAndHeight(final int surfaceWidth, final int surfaceHeight) {
         this.mScreenWidth = surfaceWidth;
         this.mScreenHeight = surfaceHeight;
+        Log.d("cocos2d-x","java Cocos2dxRenderer:setScreenWidthAndHeight set to "+String.valueOf(surfaceWidth)+" "+String.valueOf(surfaceHeight));
+        Cocos2dxRenderer.nativeSetFrameSize(surfaceWidth, surfaceHeight);
     }
 
     // ===========================================================
     // Methods for/from SuperClass/Interfaces
     // ===========================================================
 
+    // public void setFrameSize(final int surfaceWidth, final int surfaceHeight){
+    //     Cocos2dxRenderer.nativeSetFrameSize(surfaceWidth, surfaceHeight);
+    // }
+
     @Override
     public void onSurfaceCreated(final GL10 GL10, final EGLConfig EGLConfig) {
+         Log.d("cocos2d-x","java Cocos2dxRenderer:onSurfaceCreated now screen size is "+String.valueOf(this.mScreenWidth)+" "+String.valueOf(this.mScreenHeight));
         Cocos2dxRenderer.nativeInit(this.mScreenWidth, this.mScreenHeight);
         this.mLastTickInNanoSeconds = System.nanoTime();
         mNativeInitCompleted = true;
@@ -76,6 +86,7 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(final GL10 GL10, final int width, final int height) {
+        Log.d("cocos2d-x","java Cocos2dxRenderer:onSurfaceChanged now screen size is "+String.valueOf(width)+" "+String.valueOf(height));
         Cocos2dxRenderer.nativeOnSurfaceChanged(width, height);
     }
 
@@ -116,6 +127,7 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     private static native boolean nativeKeyEvent(final int keyCode,boolean isPressed);
     private static native void nativeRender();
     private static native void nativeInit(final int width, final int height);
+    private static native void nativeSetFrameSize(final int width, final int height);
     private static native void nativeOnSurfaceChanged(final int width, final int height);
     private static native void nativeOnPause();
     private static native void nativeOnResume();
