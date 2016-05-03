@@ -156,6 +156,7 @@ void GLView::updateDesignResolutionSize()
         
         // reset director's member variables to fit visible rect
         auto director = Director::getInstance();
+		CCLOG("GLView:updateDesignResolutionSize _scaleX is %f _scaleY is %f _screenSize is %f %f _designResolutionSize is %f %f",_scaleX,_scaleY,_screenSize.width,_screenSize.height,_designResolutionSize.width,_designResolutionSize.height);
         director->_winSizeInPoints = getDesignResolutionSize();
         director->_isStatusLabelUpdated = true;
         director->setGLDefaultValues();
@@ -189,6 +190,7 @@ const Size& GLView::getFrameSize() const
 
 void GLView::setFrameSize(float width, float height)
 {
+	CCLOG("GLView:setFrameSize _designResolutionSize and _screenSize set to %f %f",width,height);
     _designResolutionSize = _screenSize = Size(width, height);
 }
 
