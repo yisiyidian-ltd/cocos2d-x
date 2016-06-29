@@ -33,11 +33,10 @@ THE SOFTWARE.
 #endif
 
 #include "base/CCDirector.h"
+#include "base/ccUTF8.h"
 #include "base/uthash.h"
 #include "renderer/ccGLStateCache.h"
 #include "platform/CCFileUtils.h"
-
-#include "deprecated/CCString.h"
 
 // helper functions
 
@@ -349,7 +348,7 @@ void GLProgram::parseVertexAttribs()
     else
     {
         GLchar ErrorLog[1024];
-        glGetProgramInfoLog(_program, sizeof(ErrorLog), NULL, ErrorLog);
+        glGetProgramInfoLog(_program, sizeof(ErrorLog), nullptr, ErrorLog);
         CCLOG("Error linking shader program: '%s'\n", ErrorLog);
     }
 }
@@ -407,7 +406,7 @@ void GLProgram::parseUniforms()
     else
     {
         GLchar ErrorLog[1024];
-        glGetProgramInfoLog(_program, sizeof(ErrorLog), NULL, ErrorLog);
+        glGetProgramInfoLog(_program, sizeof(ErrorLog), nullptr, ErrorLog);
         CCLOG("Error linking shader program: '%s'\n", ErrorLog);
 
     }

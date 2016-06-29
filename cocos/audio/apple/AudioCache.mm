@@ -39,10 +39,10 @@
 typedef ALvoid	AL_APIENTRY	(*alBufferDataStaticProcPtr) (const ALint bid, ALenum format, ALvoid* data, ALsizei size, ALsizei freq);
 static ALvoid  alBufferDataStaticProc(const ALint bid, ALenum format, ALvoid* data, ALsizei size, ALsizei freq)
 {
-	static	alBufferDataStaticProcPtr	proc = NULL;
+    static alBufferDataStaticProcPtr proc = nullptr;
     
-    if (proc == NULL){
-        proc = (alBufferDataStaticProcPtr) alcGetProcAddress(NULL, (const ALCchar*) "alBufferDataStatic");
+    if (proc == nullptr) {
+        proc = (alBufferDataStaticProcPtr) alcGetProcAddress(nullptr, (const ALCchar*) "alBufferDataStatic");
     }
     
     if (proc){
@@ -102,7 +102,7 @@ void AudioCache::readDataTask()
     AudioBufferList theDataBuffer;
     ExtAudioFileRef extRef = nullptr;
     
-    NSString *fileFullPath = [[NSString alloc] initWithCString:_fileFullPath.c_str() encoding:[NSString defaultCStringEncoding]];
+    NSString *fileFullPath = [[NSString alloc] initWithCString:_fileFullPath.c_str() encoding:NSUTF8StringEncoding];
     auto fileURL = (CFURLRef)[[NSURL alloc] initFileURLWithPath:fileFullPath];
     [fileFullPath release];
 

@@ -99,7 +99,7 @@ public:
 
     }
 
-    bool setFont(const char * pFontName = nullptr, int nSize = 0)
+    bool setFont(const char * pFontName = "", int nSize = 0)
     {
         bool bRet = false;
         do
@@ -110,7 +110,7 @@ public:
             LOGFONTA    tNewFont = {0};
             LOGFONTA    tOldFont = {0};
             GetObjectA(hDefFont, sizeof(tNewFont), &tNewFont);
-            if (fontName.c_str())
+            if (!fontName.empty())
             {
                 // create font from ttf file
                 if (FileUtils::getInstance()->getFileExtension(fontName) == ".ttf")
@@ -243,7 +243,7 @@ public:
     int drawText(const char * pszText, SIZE& tSize, Device::TextAlign eAlign)
     {
         int nRet = 0;
-        wchar_t * pwszBuffer = 0;
+        wchar_t * pwszBuffer = nullptr;
         wchar_t* fixedText = nullptr;
         do
         {

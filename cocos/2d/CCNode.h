@@ -38,6 +38,10 @@
 #include "2d/CCComponentContainer.h"
 #include "2d/CCComponent.h"
 
+#if CC_USE_PHYSICS
+#include "physics/CCPhysicsBody.h"
+#endif
+
 NS_CC_BEGIN
 
 class GridBase;
@@ -142,7 +146,7 @@ public:
     /**
      LocalZOrder is the 'key' used to sort the node relative to its siblings.
 
-     The Node's parent will sort all its children based ont the LocalZOrder value.
+     The Node's parent will sort all its children based on the LocalZOrder value.
      If two nodes have the same LocalZOrder, then the node that was added first to the children's array will be in front of the other node in the array.
      
      Also, the Scene Graph is traversed using the "In-Order" tree traversal algorithm ( http://en.wikipedia.org/wiki/Tree_traversal#In-order )
@@ -701,13 +705,14 @@ public:
      * The default value is false, while in Layer and Scene are true.
      *
      * @param ignore    true if anchor point will be (0,0) when you position this node.
-     * @todo This method should be renamed as setIgnoreAnchorPointForPosition(bool) or something with "set".
      */
-    virtual void ignoreAnchorPointForPosition(bool ignore);
+    virtual void setIgnoreAnchorPointForPosition(bool ignore);
+    CC_DEPRECATED_ATTRIBUTE virtual void ignoreAnchorPointForPosition(bool ignore) { setIgnoreAnchorPointForPosition(ignore); }
+    
     /**
      * Gets whether the anchor point will be (0,0) when you position this node.
      *
-     * @see `ignoreAnchorPointForPosition(bool)`
+     * @see `setIgnoreAnchorPointForPosition(bool)`
      *
      * @return true if the anchor point will be (0,0) when you position this node.
      */
@@ -1260,7 +1265,6 @@ public:
      * Composable actions are counted as 1 action. Example:
      *    If you are running 1 Sequence of 7 actions, it will return 1.
      *    If you are running 7 Sequences of 2 actions, it will return 7.
-     * @todo Rename to getNumberOfRunningActions()
      *
      * @return The number of actions that are running plus the ones that are schedule to run.
      */
@@ -1639,7 +1643,8 @@ public:
      *
      * @param additionalTransform An additional transform matrix.
      */
-    void setAdditionalTransform(Mat4* additionalTransform);
+    void setAdditionalTransform(const Mat4* additionalTransform);
+    void setAdditionalTransform(const Mat4& additionalTransform);
     void setAdditionalTransform(const AffineTransform& additionalTransform);
 
     /// @} end of Coordinate Converters
@@ -1865,13 +1870,13 @@ protected:
     float _rotationZ_X;             ///< rotation angle on Z-axis, component X
     float _rotationZ_Y;             ///< rotation angle on Z-axis, component Y
     
-    Quaternion _rotationQuat;      ///rotation using quaternion, if _rotationZ_X == _rotationZ_Y, _rotationQuat = RotationZ_X * RotationY * RotationX, else _rotationQuat = RotationY * RotationX
+    Quaternion _rotationQuat;       ///rotation using quaternion, if _rotationZ_X == _rotationZ_Y, _rotationQuat = RotationZ_X * RotationY * RotationX, else _rotationQuat = RotationY * RotationX
 
     float _scaleX;                  ///< scaling factor on x-axis
     float _scaleY;                  ///< scaling factor on y-axis
     float _scaleZ;                  ///< scaling factor on z-axis
 
-    Vec2 _position;                ///< position of the node
+    Vec2 _position;                 ///< position of the node
     float _positionZ;               ///< OpenGL real Z position
     Vec2 _normalizedPosition;
     bool _usingNormalizedPosition;
@@ -1880,21 +1885,21 @@ protected:
     float _skewX;                   ///< skew angle on x-axis
     float _skewY;                   ///< skew angle on y-axis
 
-    Vec2 _anchorPointInPoints;     ///< anchor point in points
-    Vec2 _anchorPoint;             ///< anchor point normalized (NOT in points)
+    Vec2 _anchorPointInPoints;      ///< anchor point in points
+    Vec2 _anchorPoint;              ///< anchor point normalized (NOT in points)
 
     Size _contentSize;              ///< untransformed size of the node
     bool _contentSizeDirty;         ///< whether or not the contentSize is dirty
 
-    Mat4 _modelViewTransform;    ///< ModelView transform of the Node.
+    Mat4 _modelViewTransform;       ///< ModelView transform of the Node.
 
     // "cache" variables are allowed to be mutable
-    mutable Mat4 _transform;      ///< transform
+    mutable Mat4 _transform;        ///< transform
     mutable bool _transformDirty;   ///< transform dirty flag
-    mutable Mat4 _inverse;        ///< inverse transform
+    mutable Mat4 _inverse;          ///< inverse transform
     mutable bool _inverseDirty;     ///< inverse transform dirty flag
-    mutable Mat4 _additionalTransform; ///< transform
-    bool _useAdditionalTransform;   ///< The flag to check whether the additional transform is dirty
+    mutable Mat4* _additionalTransform; ///< two transforms needed by additional transforms
+    mutable bool _additionalTransformDirty; ///< transform dirty ?
     bool _transformUpdated;         ///< Whether or not the Transform object was updated since the last frame
 
     int _localZOrder;               ///< Local order (relative to its siblings) used to sort the node
@@ -1903,10 +1908,10 @@ protected:
     Vector<Node*> _children;        ///< array of children nodes
     Node *_parent;                  ///< weak reference to parent node
     Director* _director;            //cached director pointer to improve rendering performance
-    int _tag;                         ///< a tag. Can be any number you assigned just to identify this node
+    int _tag;                       ///< a tag. Can be any number you assigned just to identify this node
     
-    std::string _name;               ///<a string label, an user defined string to identify this node
-    size_t _hashOfName;            ///<hash value of _name, used for speed in getChildByName
+    std::string _name;              ///<a string label, an user defined string to identify this node
+    size_t _hashOfName;             ///<hash value of _name, used for speed in getChildByName
 
     void *_userData;                ///< A user assigned void pointer, Can be point to any cpp object
     Ref *_userObject;               ///< A user assigned Object
@@ -1940,9 +1945,9 @@ protected:
     ComponentContainer *_componentContainer;        ///< Dictionary of components
     
     // opacity controls
-    GLubyte         _displayedOpacity;
+    GLubyte     _displayedOpacity;
     GLubyte     _realOpacity;
-    Color3B         _displayedColor;
+    Color3B     _displayedColor;
     Color3B     _realColor;
     bool        _cascadeColorEnabled;
     bool        _cascadeOpacityEnabled;
@@ -1961,8 +1966,13 @@ protected:
 #if CC_USE_PHYSICS
     PhysicsBody* _physicsBody;
 public:
-    void setPhysicsBody(Component* physicsBody) 
-    { 
+    void setPhysicsBody(PhysicsBody* physicsBody)
+    {
+        if (_physicsBody != nullptr)
+        {
+            removeComponent(_physicsBody);
+        }
+
         addComponent(physicsBody);
     }
     PhysicsBody* getPhysicsBody() const { return _physicsBody; }
