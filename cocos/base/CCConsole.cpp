@@ -420,7 +420,7 @@ bool Console::listenOnTCP(int port)
 
     snprintf(serv, sizeof(serv)-1, "%d", port );
 
-    bzero(&hints, sizeof(struct addrinfo));
+    memset(&hints,0, sizeof(struct addrinfo));
     hints.ai_flags = AI_PASSIVE;
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;

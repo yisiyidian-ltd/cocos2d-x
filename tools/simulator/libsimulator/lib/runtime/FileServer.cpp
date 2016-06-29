@@ -130,7 +130,7 @@ bool FileServer::listenOnTCP(int port)
     snprintf(serv, sizeof(serv)-1, "%d", port );
     serv[sizeof(serv)-1]=0;
 
-    bzero(&hints, sizeof(struct addrinfo));
+    memset(&hints,0, sizeof(struct addrinfo));
     hints.ai_flags = AI_PASSIVE;
     hints.ai_family = AF_INET; // AF_UNSPEC: Do we need IPv6 ?
     hints.ai_socktype = SOCK_STREAM;

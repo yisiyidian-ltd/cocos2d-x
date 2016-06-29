@@ -1876,8 +1876,9 @@ void Label::updateDisplayedColor(const Color3B& parentColor)
 {
     Node::updateDisplayedColor(parentColor);
 
-    if (_currentLabelType == LabelType::TTF || _currentLabelType == LabelType::STRING_TEXTURE)
-        setTextColor(Color4B(_displayedColor));
+    //bugs fuck comment by flyingkisser
+//    if (_currentLabelType == LabelType::TTF || _currentLabelType == LabelType::STRING_TEXTURE)
+//        setTextColor(Color4B(_displayedColor));
 
     if (_textSprite)
     {
