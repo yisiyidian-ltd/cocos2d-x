@@ -308,10 +308,10 @@ SocketIOPacket * SocketIOPacket::createPacketWithType(std::string type, SocketIO
     switch (version)
     {
     case SocketIOPacket::SocketIOVersion::V09x:
-        ret = new (std::nothrow) SocketIOPacket;
+        ret = new SocketIOPacket;
         break;
     case SocketIOPacket::SocketIOVersion::V10x:
-        ret = new (std::nothrow) SocketIOPacketV10x;
+        ret = new SocketIOPacketV10x;
         break;
     }
     ret->initWithType(type);
@@ -325,10 +325,10 @@ SocketIOPacket * SocketIOPacket::createPacketWithTypeIndex(int type, SocketIOPac
     switch (version)
     {
     case SocketIOPacket::SocketIOVersion::V09x:
-        ret = new (std::nothrow) SocketIOPacket;
+        ret = new SocketIOPacket;
         break;
     case SocketIOPacket::SocketIOVersion::V10x:
-        return new (std::nothrow) SocketIOPacketV10x;
+        return new SocketIOPacketV10x;
         break;
     }
     ret->initWithTypeIndex(type);
@@ -752,7 +752,7 @@ void SIOClientImpl::onOpen(WebSocket* ws)
 
 void SIOClientImpl::onMessage(WebSocket* ws, const WebSocket::Data& data)
 {
-    CCLOGINFO("SIOClientImpl::onMessage received:%s", data.bytes);
+    CCLOGINFO("SIOClientImpl::onMessage received: %s", data.bytes);
     CC_UNUSED_PARAM(ws);
 
     std::string payload = data.bytes;
@@ -760,7 +760,7 @@ void SIOClientImpl::onMessage(WebSocket* ws, const WebSocket::Data& data)
     payload = payload.substr(1, payload.size() - 1);
 
     SIOClient *c = nullptr;
-    
+
     switch (_version)
     {
         case SocketIOPacket::SocketIOVersion::V09x:
@@ -893,7 +893,7 @@ void SIOClientImpl::onMessage(WebSocket* ws, const WebSocket::Data& data)
                 szBuf[0]=payload.at(0);
                 int control2 = atoi(szBuf);
                 CCLOGINFO("Message code: [%i]", control);
-     
+
                 SocketIOPacket *packetOut = SocketIOPacket::createPacketWithType("event", _version);
                 std::string endpoint = "";
 

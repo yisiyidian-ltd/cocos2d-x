@@ -109,10 +109,7 @@ public:
      void setAliasTexParameters();
 
 protected:
-    void releaseTextures();
-
-    /** @deprecated Use method releaseTextures() instead */
-    CC_DEPRECATED_ATTRIBUTE void relaseTextures();
+    void relaseTextures();
 
     void findNewCharacters(const std::u16string& u16Text, std::unordered_map<unsigned short, unsigned short>& charCodeMap);
 

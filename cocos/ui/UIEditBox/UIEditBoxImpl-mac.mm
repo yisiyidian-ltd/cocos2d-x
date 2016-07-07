@@ -377,6 +377,7 @@ bool EditBoxImplMac::initWithSize(const Size& size)
 NSFont* EditBoxImplMac::constructFont(const char *fontName, int fontSize)
 {
     NSString * fntName = [NSString stringWithUTF8String:fontName];
+    fntName = [[fntName lastPathComponent] stringByDeletingPathExtension];
     float retinaFactor = _inRetinaMode ? 2.0f : 1.0f;
     auto glview = cocos2d::Director::getInstance()->getOpenGLView();
     float scaleFactor = glview->getScaleX();
@@ -537,7 +538,7 @@ NSPoint EditBoxImplMac::convertDesignCoordToScreenCoord(const Vec2& designCoord,
     Vec2 visiblePos = Vec2(designCoord.x * eglView->getScaleX(), designCoord.y * eglView->getScaleY());
     Vec2 screenGLPos = visiblePos + eglView->getViewPortRect().origin;
     
-    //TODO: I don't know why here needs to subtract `height`.
+    //TODO: I don't know why here needs to substract `height`.
     NSPoint screenPos = NSMakePoint(screenGLPos.x, screenGLPos.y-height);
     
     if (bInRetinaMode) {

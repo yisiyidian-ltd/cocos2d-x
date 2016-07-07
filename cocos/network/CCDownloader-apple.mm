@@ -105,7 +105,7 @@ namespace cocos2d { namespace network {
     }
     IDownloadTask *DownloaderApple::createCoTask(std::shared_ptr<const DownloadTask>& task)
     {
-        DownloadTaskApple* coTask = new (std::nothrow) DownloadTaskApple();
+        DownloadTaskApple* coTask = new DownloadTaskApple();
         DeclareDownloaderImplVar;
         if (task->storagePath.length())
         {

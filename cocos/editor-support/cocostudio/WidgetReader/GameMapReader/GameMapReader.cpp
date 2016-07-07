@@ -55,7 +55,7 @@ namespace cocostudio
     {
         if (!_instanceTMXTiledMapReader)
         {
-            _instanceTMXTiledMapReader = new (std::nothrow) GameMapReader();
+            _instanceTMXTiledMapReader = new GameMapReader();
         }
         
         return _instanceTMXTiledMapReader;

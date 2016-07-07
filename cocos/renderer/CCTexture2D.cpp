@@ -1392,7 +1392,7 @@ void Texture2D::addSpriteFrameCapInset(SpriteFrame* spritframe, const Rect& capI
 {
     if(nullptr == _ninePatchInfo)
     {
-        _ninePatchInfo = new (std::nothrow) NinePatchInfo;
+        _ninePatchInfo = new NinePatchInfo;
     }
     if(nullptr == spritframe)
     {

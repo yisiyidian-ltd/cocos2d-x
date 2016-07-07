@@ -203,7 +203,7 @@ Widget* RelativeLayoutManager::getRelativeWidget(Widget* widget)
     return relativeWidget;
 }
     
-bool RelativeLayoutManager::calculateFinalPositionWithRelativeWidget(LayoutProtocol *layout)
+bool RelativeLayoutManager::caculateFinalPositionWithRelativeWidget(LayoutProtocol *layout)
 {
     Vec2 ap = _widget->getAnchorPoint();
     Size cs = _widget->getContentSize();
@@ -426,7 +426,7 @@ bool RelativeLayoutManager::calculateFinalPositionWithRelativeWidget(LayoutProto
     return true;
 }
     
-void RelativeLayoutManager::calculateFinalPositionWithRelativeAlign()
+void RelativeLayoutManager::caculateFinalPositionWithRelativeAlign()
 {
     RelativeLayoutParameter* layoutParameter = dynamic_cast<RelativeLayoutParameter*>(_widget->getLayoutParameter());
     
@@ -522,16 +522,6 @@ void RelativeLayoutManager::calculateFinalPositionWithRelativeAlign()
     }
 }
 
-bool RelativeLayoutManager::caculateFinalPositionWithRelativeWidget(LayoutProtocol *layout)
-{
-    return calculateFinalPositionWithRelativeWidget(layout);
-}
-
-void RelativeLayoutManager::caculateFinalPositionWithRelativeAlign()
-{
-    calculateFinalPositionWithRelativeAlign();
-}
-
 void RelativeLayoutManager::doLayout(LayoutProtocol *layout)
 {
     
@@ -553,12 +543,12 @@ void RelativeLayoutManager::doLayout(LayoutProtocol *layout)
                 }
                 
                
-                bool ret = this->calculateFinalPositionWithRelativeWidget(layout);
+                bool ret = this->caculateFinalPositionWithRelativeWidget(layout);
                 if (!ret) {
                     continue;
                 }
                 
-                this->calculateFinalPositionWithRelativeAlign();
+                this->caculateFinalPositionWithRelativeAlign();
             
             
                 _widget->setPosition(Vec2(_finalPositionX, _finalPositionY));

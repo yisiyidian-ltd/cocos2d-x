@@ -53,7 +53,7 @@ __NotificationCenter *__NotificationCenter::getInstance()
 {
     if (!s_sharedNotifCenter)
     {
-        s_sharedNotifCenter = new (std::nothrow) __NotificationCenter;
+        s_sharedNotifCenter = new __NotificationCenter;
     }
     return s_sharedNotifCenter;
 }

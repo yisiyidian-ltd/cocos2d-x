@@ -24,8 +24,7 @@
 
 #include "UIVideoPlayer.h"
 
-// No Available on tvOS
-#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS && !defined(CC_TARGET_OS_TVOS)
+#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
 
 using namespace cocos2d::experimental::ui;
 //-------------------------------------------------------------------------------------

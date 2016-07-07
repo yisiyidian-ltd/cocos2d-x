@@ -107,10 +107,7 @@ public:
      * get triangles count
      * @return number of triangles
      */
-    const unsigned int getTrianglesCount() const;
-
-    /** @deprecated Use method getTrianglesCount() instead */
-    CC_DEPRECATED_ATTRIBUTE const unsigned int getTriaglesCount() const;
+    const unsigned int getTriaglesCount() const;
     
     /**
      * get sum of all triangle area size

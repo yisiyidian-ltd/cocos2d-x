@@ -84,25 +84,17 @@ namespace ui {
     bool Scale9Sprite::initWithSpriteFrame(SpriteFrame* spriteFrame,
                                            const Rect& capInsets)
     {
-        bool ret = false;
-        do {
-            Texture2D* texture = spriteFrame->getTexture();
-            CCASSERT(texture != NULL, "CCTexture must be not nil");
-            if(texture == nullptr) break;
-            
-            Sprite *sprite = Sprite::createWithSpriteFrame(spriteFrame);
-            CCASSERT(sprite != NULL, "sprite must be not nil");
-            if(sprite == nullptr) break;
-            
-            ret = this->init(sprite,
-                                      spriteFrame->getRect(),
-                                      spriteFrame->isRotated(),
-                                      spriteFrame->getOffset(),
-                                      spriteFrame->getOriginalSize(),
-                                      capInsets);
-        } while (false);
-        
-        return ret;
+        Texture2D* texture = spriteFrame->getTexture();
+        CCASSERT(texture != NULL, "CCTexture must be not nil");
+        Sprite *sprite = Sprite::createWithSpriteFrame(spriteFrame);
+        CCASSERT(sprite != NULL, "sprite must be not nil");
+        bool pReturn = this->init(sprite,
+                                  spriteFrame->getRect(),
+                                  spriteFrame->isRotated(),
+                                  spriteFrame->getOffset(),
+                                  spriteFrame->getOriginalSize(),
+                                  capInsets);
+        return pReturn;
     }
     bool Scale9Sprite::initWithSpriteFrame(SpriteFrame* spriteFrame)
     {
@@ -113,21 +105,15 @@ namespace ui {
     bool Scale9Sprite::initWithSpriteFrameName(const std::string& spriteFrameName,
                                                const Rect& capInsets)
     {
-        bool ret = false;
-        do {
-            auto spriteFrameCache = SpriteFrameCache::getInstance();
-            CCASSERT(spriteFrameCache != nullptr,
-                     "SpriteFrameCache::getInstance() must be non-NULL");
-            if(spriteFrameCache == nullptr) break;
-            
-            SpriteFrame *frame = spriteFrameCache->getSpriteFrameByName(spriteFrameName);
-            CCASSERT(frame != nullptr, "CCSpriteFrame must be non-NULL");
-            if (frame == nullptr) break;
-            
-            ret = initWithSpriteFrame(frame, capInsets);
-        } while (false);
-        
-        return ret;
+        CCASSERT((SpriteFrameCache::getInstance()) != NULL,
+                 "SpriteFrameCache::getInstance() must be non-NULL");
+
+        SpriteFrame *frame = SpriteFrameCache::getInstance()->getSpriteFrameByName(spriteFrameName);
+        CCASSERT(frame != NULL, "CCSpriteFrame must be non-NULL");
+
+        if (NULL == frame) return false;
+        bool pReturn = this->initWithSpriteFrame(frame, capInsets);
+        return pReturn;
     }
     bool Scale9Sprite::initWithSpriteFrameName(const std::string& spriteFrameName)
     {
@@ -212,19 +198,16 @@ namespace ui {
                                     const Rect& rect,
                                     const Rect& capInsets)
     {
-        CCASSERT(!file.empty(), "file must not be empty string!");
-        if(file.empty())
-        {
-            return false;
-        }
-        
-        auto sprite = Sprite::create(file);
-        return init(sprite, rect, capInsets);
+        Sprite *sprite = nullptr;
+        sprite = Sprite::create(file);
+        bool pReturn = this->init(sprite, rect, capInsets);
+        return pReturn;
     }
 
     bool Scale9Sprite::initWithFile(const std::string& file, const Rect& rect)
     {
-        return initWithFile(file, rect, Rect::ZERO);
+        bool pReturn = this->initWithFile(file, rect, Rect::ZERO);
+        return pReturn;
     }
 
     Scale9Sprite* Scale9Sprite::create()
@@ -613,7 +596,7 @@ namespace ui {
     }
 
 /** sets the opacity.
-    @warning If the texture has premultiplied alpha then, the R, G and B channels will be modified.
+    @warning If the texture has premultiplied alpha then, the R, G and B channels will be modifed.
     Values goes from 0 to 255, where 255 means fully opaque.
 */
 
@@ -857,7 +840,7 @@ namespace ui {
 
         this->cleanupSlicedSprites();
 
-        //we must invalid the transform when toggling scale9enabled
+        //we must invalide the transform when toggling scale9enabled
         _transformUpdated = _transformDirty = _inverseDirty = true;
 
         if (_scale9Enabled)
@@ -1094,7 +1077,7 @@ namespace ui {
         auto atlasWidth = tex->getPixelsWide();
         auto atlasHeight = tex->getPixelsHigh();
 
-        //calculate texture coordinate
+        //caculate texture coordinate
         float leftWidth = 0, centerWidth = 0, rightWidth = 0;
         float topHeight = 0, centerHeight = 0, bottomHeight = 0;
 
@@ -1326,8 +1309,8 @@ namespace ui {
         CC_SAFE_DELETE_ARRAY(_sliceVertices);
         CC_SAFE_DELETE_ARRAY(_sliceIndices);
 
-        _sliceVertices = new (std::nothrow) V3F_C4B_T2F[slicedTotalVertexCount];
-        _sliceIndices = new (std::nothrow) unsigned short[slicedTotalIndices];
+        _sliceVertices = new V3F_C4B_T2F[slicedTotalVertexCount];
+        _sliceIndices = new unsigned short[slicedTotalIndices];
 
         unsigned short indicesStart = 0;
         const unsigned short indicesOffset = 6;

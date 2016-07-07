@@ -79,7 +79,7 @@ FontAtlas::FontAtlas(Font &theFont)
             _currentPageDataSize *= 2;
         }
 
-        _currentPageData = new (std::nothrow) unsigned char[_currentPageDataSize];
+        _currentPageData = new unsigned char[_currentPageDataSize];
         memset(_currentPageData, 0, _currentPageDataSize);
 
         auto  pixelFormat = outlineSize > 0 ? Texture2D::PixelFormat::AI88 : Texture2D::PixelFormat::A8; 
@@ -110,7 +110,7 @@ FontAtlas::~FontAtlas()
 #endif
 
     _font->release();
-    releaseTextures();
+    relaseTextures();
 
     delete []_currentPageData;
 
@@ -123,18 +123,13 @@ FontAtlas::~FontAtlas()
 #endif
 }
 
-void FontAtlas::releaseTextures()
+void FontAtlas::relaseTextures()
 {
     for( auto &item: _atlasTextures)
     {
         item.second->release();
     }
     _atlasTextures.clear();
-}
-
-void FontAtlas::relaseTextures()
-{
-    releaseTextures();
 }
 
 void FontAtlas::purgeTexturesAtlas()
