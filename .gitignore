@@ -152,3 +152,4 @@ tests/cpp-tests/Resources/audio
 /*/*/*/*/prebuilt-mk/Android.mk
 *.xcscmblueprint
 *.sublime-workspace
+cocos/scripting/js-bindings/proj.ios_mac/build/
