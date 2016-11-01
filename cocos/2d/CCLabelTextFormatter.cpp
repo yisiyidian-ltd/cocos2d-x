@@ -1,6 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013      Zynga Inc.
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
 
  http://www.cocos2d-x.org
 
@@ -130,7 +130,7 @@ void Label::updateBMFontScale()
     }
 }
 
-bool Label::multilineTextWrap(std::function<int(const std::u16string&, int, int)> nextTokenLen)
+bool Label::multilineTextWrap(const std::function<int(const std::u16string&, int, int)>& nextTokenLen)
 {
     int textLen = getStringLength();
     int lineIndex = 0;
@@ -165,7 +165,7 @@ bool Label::multilineTextWrap(std::function<int(const std::u16string&, int, int)
         }
 
         auto tokenLen = nextTokenLen(_utf16Text, index, textLen);
-        float tokenHighestY = highestY;;
+        float tokenHighestY = highestY;
         float tokenLowestY = lowestY;
         float tokenRight = letterRight;
         float nextLetterX = nextTokenX;
@@ -218,7 +218,7 @@ bool Label::multilineTextWrap(std::function<int(const std::u16string&, int, int)
                     nextLetterX += _horizontalKernings[letterIndex + 1];
                 nextLetterX += letterDef.xAdvance * _bmfontScale + _additionalKerning;
 
-                tokenRight = letterPosition.x + letterDef.width * _bmfontScale;
+                tokenRight = nextLetterX / contentScaleFactor;
             }
             nextChangeSize = true;
 
@@ -270,12 +270,12 @@ bool Label::multilineTextWrap(std::function<int(const std::u16string&, int, int)
 
 bool Label::multilineTextWrapByWord()
 {
-    return multilineTextWrap(std::bind(CC_CALLBACK_3(Label::getFirstWordLen, this), std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    return multilineTextWrap(CC_CALLBACK_3(Label::getFirstWordLen, this));
 }
 
 bool Label::multilineTextWrapByChar()
 {
-      return multilineTextWrap(std::bind(CC_CALLBACK_3(Label::getFirstCharLen, this) , std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+    return multilineTextWrap(CC_CALLBACK_3(Label::getFirstCharLen, this));
 }
 
 bool Label::isVerticalClamp()
@@ -325,7 +325,7 @@ bool Label::isHorizontalClamp()
     return letterClamp;
 }
 
-void Label::shrinkLabelToContentSize(std::function<bool(void)> lambda)
+void Label::shrinkLabelToContentSize(const std::function<bool(void)>& lambda)
 {
     float fontSize = this->getRenderingFontSize();
 

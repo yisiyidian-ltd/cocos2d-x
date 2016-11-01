@@ -1,6 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010      cocos2d-x.org
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -133,7 +133,7 @@ namespace utils
 
      * @return  Returns found node or nullptr
      */
-    CC_DLL Node*  findChild(Node* levelRoot, const char* name);
+    CC_DLL Node*  findChild(Node* levelRoot, const std::string& name);
 
     /**
      * Find a child by tag recursively
@@ -148,7 +148,7 @@ namespace utils
      * @return  Returns found node or nullptr with specified type 'T'
      */
     template<typename T> inline
-    T findChild(Node* levelRoot, const char* name)
+    T findChild(Node* levelRoot, const std::string& name)
     {
         return dynamic_cast<T>(findChild(levelRoot, name));
     }

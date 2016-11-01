@@ -2175,7 +2175,7 @@ int
 
 /**
  * @method getNumberOfRadioButtons
- * @return {long}
+ * @return {int}
  */
 getNumberOfRadioButtons : function (
 )
@@ -2521,7 +2521,7 @@ size
 
 /**
  * @method getStringLength
- * @return {long}
+ * @return {int}
  */
 getStringLength : function (
 )
@@ -2695,7 +2695,7 @@ ccui.TextAtlas = {
 
 /**
  * @method getStringLength
- * @return {long}
+ * @return {int}
  */
 getStringLength : function (
 )
@@ -3535,9 +3535,19 @@ getCenterItemInCurrentView : function (
 
 /**
  * @method getCurSelectedIndex
- * @return {long}
+ * @return {int}
  */
 getCurSelectedIndex : function (
+)
+{
+    return 0;
+},
+
+/**
+ * @method getScrollDuration
+ * @return {float}
+ */
+getScrollDuration : function (
 )
 {
     return 0;
@@ -3555,12 +3565,12 @@ getItemsMargin : function (
 
 /**
  * @method jumpToItem
- * @param {long} arg0
+ * @param {int} arg0
  * @param {vec2_object} arg1
  * @param {vec2_object} arg2
  */
 jumpToItem : function (
-long, 
+int, 
 vec2, 
 vec2 
 )
@@ -3580,7 +3590,7 @@ magnetictype
 /**
  * @method getIndex
  * @param {ccui.Widget} arg0
- * @return {long}
+ * @return {int}
  */
 getIndex : function (
 widget 
@@ -3611,10 +3621,10 @@ int
 
 /**
  * @method insertDefaultItem
- * @param {long} arg0
+ * @param {int} arg0
  */
 insertDefaultItem : function (
-long 
+int 
 )
 {
 },
@@ -3717,11 +3727,11 @@ getMagneticType : function (
 
 /**
  * @method getItem
- * @param {long} arg0
+ * @param {int} arg0
  * @return {ccui.Widget}
  */
 getItem : function (
-long 
+int 
 )
 {
     return ccui.Widget;
@@ -3729,23 +3739,23 @@ long
 
 /**
  * @method removeItem
- * @param {long} arg0
+ * @param {int} arg0
  */
 removeItem : function (
-long 
+int 
 )
 {
 },
 
 /**
  * @method scrollToItem
-* @param {long|long} long
+* @param {int|int} int
 * @param {vec2_object|vec2_object} vec2
 * @param {vec2_object|vec2_object} vec2
 * @param {float} float
 */
 scrollToItem : function(
-long,
+int,
 vec2,
 vec2,
 float 
@@ -3796,6 +3806,16 @@ getRightmostItemInCurrentView : function (
 },
 
 /**
+ * @method setScrollDuration
+ * @param {float} arg0
+ */
+setScrollDuration : function (
+float 
+)
+{
+},
+
+/**
  * @method getClosestItemToPositionInCurrentView
  * @param {vec2_object} arg0
  * @param {vec2_object} arg1
@@ -3822,11 +3842,11 @@ widget
 /**
  * @method insertCustomItem
  * @param {ccui.Widget} arg0
- * @param {long} arg1
+ * @param {int} arg1
  */
 insertCustomItem : function (
 widget, 
-long 
+int 
 )
 {
 },
@@ -3912,6 +3932,16 @@ getBallNormalFile : function (
 },
 
 /**
+ * @method getSlidBallDisabledRenderer
+ * @return {cc.Sprite}
+ */
+getSlidBallDisabledRenderer : function (
+)
+{
+    return cc.Sprite;
+},
+
+/**
  * @method setScale9Enabled
  * @param {bool} arg0
  */
@@ -3965,6 +3995,16 @@ str,
 texturerestype 
 )
 {
+},
+
+/**
+ * @method getSlidBallRenderer
+ * @return {cc.Node}
+ */
+getSlidBallRenderer : function (
+)
+{
+    return cc.Node;
 },
 
 /**
@@ -4027,6 +4067,16 @@ getCapInsetsProgressBarRenderer : function (
 )
 {
     return cc.Rect;
+},
+
+/**
+ * @method getSlidBallPressedRenderer
+ * @return {cc.Sprite}
+ */
+getSlidBallPressedRenderer : function (
+)
+{
+    return cc.Sprite;
 },
 
 /**
@@ -4111,6 +4161,16 @@ str,
 texturerestype 
 )
 {
+},
+
+/**
+ * @method getSlidBallNormalRenderer
+ * @return {cc.Sprite}
+ */
+getSlidBallNormalRenderer : function (
+)
+{
+    return cc.Sprite;
 },
 
 /**
@@ -4931,7 +4991,7 @@ ccui.TextBMFont = {
 
 /**
  * @method getStringLength
- * @return {long}
+ * @return {int}
  */
 getStringLength : function (
 )
@@ -5109,10 +5169,10 @@ getIndicatorPosition : function (
 
 /**
  * @method setCurrentPageIndex
- * @param {long} arg0
+ * @param {int} arg0
  */
 setCurrentPageIndex : function (
-long 
+int 
 )
 {
 },
@@ -5159,10 +5219,12 @@ vec2
 
 /**
  * @method scrollToPage
- * @param {long} arg0
- */
-scrollToPage : function (
-long 
+* @param {int|int} int
+* @param {float} float
+*/
+scrollToPage : function(
+int,
+float 
 )
 {
 },
@@ -5179,10 +5241,12 @@ vec2
 
 /**
  * @method scrollToItem
- * @param {long} arg0
- */
-scrollToItem : function (
-long 
+* @param {int|int} int
+* @param {float} float
+*/
+scrollToItem : function(
+int,
+float 
 )
 {
 },
@@ -5209,7 +5273,7 @@ getIndicatorPositionAsAnchorPoint : function (
 
 /**
  * @method getCurrentPageIndex
- * @return {long}
+ * @return {int}
  */
 getCurrentPageIndex : function (
 )
@@ -5251,10 +5315,10 @@ getIndicatorEnabled : function (
 
 /**
  * @method removePageAtIndex
- * @param {long} arg0
+ * @param {int} arg0
  */
 removePageAtIndex : function (
-long 
+int 
 )
 {
 },

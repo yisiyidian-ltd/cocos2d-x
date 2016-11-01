@@ -461,6 +461,7 @@ bool js_cocos2dx_ui_ListView_setGravity(JSContext *cx, uint32_t argc, jsval *vp)
 bool js_cocos2dx_ui_ListView_removeLastItem(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_getCenterItemInCurrentView(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_getCurSelectedIndex(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_ui_ListView_getScrollDuration(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_getItemsMargin(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_jumpToItem(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_setMagneticType(JSContext *cx, uint32_t argc, jsval *vp);
@@ -485,6 +486,7 @@ bool js_cocos2dx_ui_ListView_pushBackDefaultItem(JSContext *cx, uint32_t argc, j
 bool js_cocos2dx_ui_ListView_getMagneticAllowedOutOfBoundary(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_getClosestItemToPosition(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_getRightmostItemInCurrentView(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_ui_ListView_setScrollDuration(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_getClosestItemToPositionInCurrentView(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_setItemModel(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_ListView_insertCustomItem(JSContext *cx, uint32_t argc, jsval *vp);
@@ -503,17 +505,20 @@ bool js_cocos2dx_ui_Slider_getMaxPercent(JSContext *cx, uint32_t argc, jsval *vp
 bool js_cocos2dx_ui_Slider_loadSlidBallTextureNormal(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_loadProgressBarTexture(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_getBallNormalFile(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_ui_Slider_getSlidBallDisabledRenderer(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_setScale9Enabled(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_getBallPressedFile(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_getZoomScale(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_setCapInsetProgressBarRenderer(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_loadSlidBallTextures(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_ui_Slider_getSlidBallRenderer(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_addEventListener(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_setMaxPercent(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_loadBarTexture(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_getProgressBarFile(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_getCapInsetsBarRenderer(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_getCapInsetsProgressBarRenderer(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_ui_Slider_getSlidBallPressedRenderer(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_loadSlidBallTexturePressed(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_getBackFile(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_isScale9Enabled(JSContext *cx, uint32_t argc, jsval *vp);
@@ -522,6 +527,7 @@ bool js_cocos2dx_ui_Slider_setCapInsetsBarRenderer(JSContext *cx, uint32_t argc,
 bool js_cocos2dx_ui_Slider_getPercent(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_setCapInsets(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_loadSlidBallTextureDisabled(JSContext *cx, uint32_t argc, jsval *vp);
+bool js_cocos2dx_ui_Slider_getSlidBallNormalRenderer(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_setZoomScale(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_create(JSContext *cx, uint32_t argc, jsval *vp);
 bool js_cocos2dx_ui_Slider_Slider(JSContext *cx, uint32_t argc, jsval *vp);

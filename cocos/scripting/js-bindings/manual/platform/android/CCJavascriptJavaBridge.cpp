@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2014 Chukong Technologies Inc.
+ * Copyright (c) 2013-2016 Chukong Technologies Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -383,9 +383,9 @@ JS_BINDED_FUNC_IMPL(JavascriptJavaBridge, callStaticMethod)
                 switch (call.argumentTypeAtIndex(i))
                 {
                     case TypeInteger:
-                        double interger;
-                        JS::ToNumber(cx, argv.get(index), &interger);
-                        args[i].i = (int)interger;
+                        double integer;
+                        JS::ToNumber(cx, argv.get(index), &integer);
+                        args[i].i = (int)integer;
                         break;
 
                     case TypeFloat:

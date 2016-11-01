@@ -1,6 +1,6 @@
 /****************************************************************************
 Copyright (c) 2012 cocos2d-x.org
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -56,7 +56,7 @@ CameraRotationTest::CameraRotationTest()
     auto s = Director::getInstance()->getWinSize();
     
     _camControlNode = Node::create();
-    _camControlNode->setNormalizedPosition(Vec2(.5,.5));
+    _camControlNode->setPositionNormalized(Vec2(.5,.5));
     addChild(_camControlNode);
 
     _camNode = Node::create();

@@ -1,6 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010      cocos2d-x.org
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -25,6 +25,7 @@ THE SOFTWARE.
 
 #include "base/ccUtils.h"
 
+#include <cmath>
 #include <stdlib.h>
 
 #include "base/CCDirector.h"
@@ -198,7 +199,7 @@ Image* captureNode(Node* startNode, float scale)
     rtx->end();
     startNode->setPosition(savedPos);
 
-    if (std::abs(scale - 1.0f) < 1e-6/* no scale */)
+    if (std::abs(scale - 1.0f) < 1e-6f/* no scale */)
         finalRtx = rtx;
     else {
         /* scale */
@@ -265,7 +266,7 @@ long long getTimeInMilliseconds()
 {
     struct timeval tv;
     gettimeofday (&tv, nullptr);
-    return tv.tv_sec * 1000 + tv.tv_usec / 1000;
+    return (long long)tv.tv_sec * 1000 + tv.tv_usec / 1000;
 }
 
 Rect getCascadeBoundingBox(Node *node)
@@ -366,22 +367,20 @@ Sprite* createSpriteFromBase64(const char* base64String)
     return sprite;
 }
 
-Node* findChild(Node* levelRoot, const char* name)
+Node* findChild(Node* levelRoot, const std::string& name)
 {
-    if (levelRoot == nullptr)
+    if (levelRoot == nullptr || name.empty())
         return nullptr;
 
     // Find this node
-    {
-        auto target = levelRoot->getChildByName(name);
-        if (target != nullptr)
-            return target;
-    }
+    auto target = levelRoot->getChildByName(name);
+    if (target != nullptr)
+        return target;
 
     // Find recursively
     for (auto& child : levelRoot->getChildren())
     {
-        auto target = findChild(child, name);
+        target = findChild(child, name);
         if (target != nullptr)
             return target;
     }
@@ -390,20 +389,18 @@ Node* findChild(Node* levelRoot, const char* name)
 
 Node* findChild(Node* levelRoot, int tag)
 {
-    if (levelRoot == nullptr)
+    if (levelRoot == nullptr || tag == Node::INVALID_TAG)
         return nullptr;
 
     // Find this node
-    {
-        auto target = levelRoot->getChildByTag(tag);
-        if (target != nullptr)
-            return target;
-    }
+    auto target = levelRoot->getChildByTag(tag);
+    if (target != nullptr)
+        return target;
 
     // Find recursively
     for (auto& child : levelRoot->getChildren())
     {
-        auto target = findChild(child, tag);
+        target = findChild(child, tag);
         if (target != nullptr)
             return target;
     }
