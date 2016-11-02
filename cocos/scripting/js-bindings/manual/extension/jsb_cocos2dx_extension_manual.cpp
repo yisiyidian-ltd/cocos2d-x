@@ -33,6 +33,7 @@
 #include "base/CCScheduler.h"
 #include "renderer/CCTextureCache.h"
 #include "renderer/CCTextureCube.h"
+#include "base/ccUTF8.h"
 
 USING_NS_CC;
 USING_NS_CC_EXT;
