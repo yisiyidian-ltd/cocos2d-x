@@ -20,6 +20,7 @@ USING_NS_CC;
 USING_NS_CC_EXT;
 
 static FileMgr* s_FileMgr_instance=0;
+static HttpMgr* s_HttpMgr_instance=0;
 FileMgr* FileMgr::getInstance()
 {
     if(!s_FileMgr_instance)
@@ -66,6 +67,30 @@ bool FileMgr::copyFile(JSContext *cx, JS::HandleObject obj,std::string &srcFullP
     return  true;
 }
 
+HttpMgr* HttpMgr::getInstance()
+{
+    if(!s_HttpMgr_instance)
+        s_HttpMgr_instance=new (std::nothrow) HttpMgr();
+    s_HttpMgr_instance->autorelease();
+    s_HttpMgr_instance->retain();
+    return s_HttpMgr_instance;
+}
+
+void HttpMgr::setConnectTimeOut(JSContext *cx, JS::HandleObject obj,int timeoutInSec)
+{
+    _cx=cx;
+    _obj.construct(_cx, obj);
+    cocos2d::network::HttpClient::getInstance()->setTimeoutForConnect(timeoutInSec);
+    CCLOG("HttpMgr::setConnectTimeOut:%d",timeoutInSec);
+}
+void HttpMgr::setReadTimeOut(JSContext *cx, JS::HandleObject obj,int timeoutInSec)
+{
+    _cx=cx;
+    _obj.construct(_cx, obj);
+    cocos2d::network::HttpClient::getInstance()->setTimeoutForRead(timeoutInSec);
+     CCLOG("HttpMgr::setReadTimeOut:%d",timeoutInSec);
+}
+
 bool js_copy_file(JSContext *cx, uint32_t argc, jsval *vp)
 {
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
@@ -92,14 +117,47 @@ bool js_copy_file(JSContext *cx, uint32_t argc, jsval *vp)
     return false;
 }
 
+bool js_setConnectTimeOut(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    if (argc == 1){
+        int timeout;
+        bool ok = jsval_to_int(cx, args.get(0), &timeout);
+        JSB_PRECONDITION2(ok, cx, false, "js_setConnectTimeOut : Error processing arguments");
+        HttpMgr::getInstance()->setConnectTimeOut(cx, obj, timeout);
+        return  true;
+    }
+    JS_ReportError(cx, "js_setConnectTimeOut : wrong number of arguments");
+    return  false;
+}
+
+bool js_setReadTimeOut(JSContext *cx, uint32_t argc, jsval *vp)
+{
+    JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+    JS::RootedObject obj(cx, args.thisv().toObjectOrNull());
+    if (argc == 1){
+        int timeout;
+        bool ok = jsval_to_int(cx, args.get(0), &timeout);
+        JSB_PRECONDITION2(ok, cx, false, "js_setReadTimeOut : Error processing arguments");
+        HttpMgr::getInstance()->setReadTimeOut(cx, obj, timeout);
+        return true;
+    }
+    JS_ReportError(cx, "js_setReadTimeOut : wrong number of arguments");
+    return  false;
+}
 
 void register_all_cocos2dx_ccsp_manual(JSContext* cx, JS::HandleObject global)
 {
     JS::RootedObject jsbObj(cx);
     JS::RootedObject fileMgrObj(cx);
+    JS::RootedObject httpMgrObj(cx);
 
     get_or_create_js_obj(cx, global, "jsb", &jsbObj);
     get_or_create_js_obj(cx, jsbObj, "fileMgr", &fileMgrObj);
+    get_or_create_js_obj(cx, jsbObj, "httpMgr", &httpMgrObj);
     JS_DefineFunction(cx, fileMgrObj, "copyFile", js_copy_file, 2, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, httpMgrObj, "setConnectTimeOut", js_setConnectTimeOut, 1, JSPROP_READONLY | JSPROP_PERMANENT);
+    JS_DefineFunction(cx, httpMgrObj, "setReadTimeOut", js_setReadTimeOut, 1, JSPROP_READONLY | JSPROP_PERMANENT);
     
 }

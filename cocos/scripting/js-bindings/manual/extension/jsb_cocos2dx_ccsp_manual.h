@@ -14,6 +14,7 @@
 #include "jsfriendapi.h"
 #include "mozilla/Maybe.h"
 #include "cocos/network/CCDownloader.h"
+#include "cocos/network/HttpClient.h"
 #include "renderer/CCTexture2D.h"
 
 #include "external/unzip/unzip.h"
@@ -23,6 +24,18 @@ class FileMgr : cocos2d::Ref
 public:
     static FileMgr* getInstance();
     bool copyFile(JSContext *cx, JS::HandleObject obj,std::string &srcFullPath,std::string &dstFullPath);
+    
+private:
+    JSContext *_cx;
+    mozilla::Maybe<JS::PersistentRootedObject> _obj;
+};
+
+class HttpMgr : cocos2d::Ref
+{
+public:
+    static HttpMgr* getInstance();
+    void setConnectTimeOut(JSContext *cx, JS::HandleObject obj,int timeoutInSec);
+    void setReadTimeOut(JSContext *cx, JS::HandleObject obj,int timeoutInSec);
     
 private:
     JSContext *_cx;
