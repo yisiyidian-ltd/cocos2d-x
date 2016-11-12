@@ -68,6 +68,10 @@
 #include "base/base64.h"
 #include "base/ccUtils.h"
 #include "base/allocator/CCAllocatorDiagnostics.h"
+
+//add by flyingkisser
+#include "../extensions/ccsp/LogUtil.h"
+
 NS_CC_BEGIN
 
 extern const char* cocos2dVersion(void);
@@ -151,7 +155,6 @@ namespace {
         
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
         __android_log_print(ANDROID_LOG_DEBUG, "cocos2d-x debug info", "%s", buf);
-        
 #elif CC_TARGET_PLATFORM ==  CC_PLATFORM_WIN32 || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
         
         int pos = 0;
@@ -180,6 +183,9 @@ namespace {
         fprintf(stdout, "%s", buf);
         fflush(stdout);
 #endif
+    
+        //add by flyingkisser
+        ccsp::LogUtil::getInstance()->logToFileWithTime(buf);
         
         Director::getInstance()->getConsole()->log(buf);
         delete [] buf;

@@ -25,4 +25,8 @@
 #include "Particle3D/CCParticleSystem3D.h"
 #include "Particle3D/PU/CCPUParticleSystem3D.h"
 
+#include "ccsp/FileUtil.h"
+#include "ccsp/LogUtil.h"
+#include "ccsp/TimeUtil.h"
+
 #endif /* __COCOS2D_EXT_H__ */
