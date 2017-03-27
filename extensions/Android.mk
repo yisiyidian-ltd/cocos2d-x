@@ -8,6 +8,9 @@ LOCAL_MODULE_FILENAME := libextension
 LOCAL_ARM_MODE := arm
 
 LOCAL_SRC_FILES := \
+ccsp/FileUtil.cpp \
+ccsp/LogUtil.cpp \
+ccsp/TimeUtil.cpp \
 assets-manager/AssetsManager.cpp \
 assets-manager/Manifest.cpp \
 assets-manager/AssetsManagerEx.cpp \
