@@ -1,6 +1,6 @@
 /*
  * Created by James Chen on 3/11/13.
- * Copyright (c) 2013-2016 Chukong Technologies Inc.
+ * Copyright (c) 2013-2017 Chukong Technologies Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@
 #include "scripting/js-bindings/manual/cocos2d_specifics.hpp"
 #include "scripting/js-bindings/auto/jsb_cocos2dx_auto.hpp"
 #include <thread>
-#include "external/unzip/unzip.h"
+#include <chrono>
 
 #include "base/CCDirector.h"
 #include "base/CCScheduler.h"
@@ -35,6 +35,7 @@
 #include "renderer/CCTextureCube.h"
 #include "base/ccUTF8.h"
 
+#include "external/unzip/unzip.h"
 USING_NS_CC;
 USING_NS_CC_EXT;
 
@@ -878,7 +879,7 @@ bool js_cocos2dx_extension_EventListenerAssetsManagerEx_init(JSContext *cx, uint
             if(JS_TypeOfValue(cx, args.get(1)) == JSTYPE_FUNCTION)
             {
                 JS::RootedObject jstarget(cx, args.thisv().toObjectOrNull());
-                std::shared_ptr<JSFunctionWrapper> func(new JSFunctionWrapper(cx, jstarget, args.get(1)));
+                std::shared_ptr<JSFunctionWrapper> func(new JSFunctionWrapper(cx, jstarget, args.get(1), args.thisv()));
                 auto lambda = [=](cocos2d::extension::EventAssetsManagerEx* larg0) -> void {
                     JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
                     jsval largv[1];
@@ -895,7 +896,6 @@ bool js_cocos2dx_extension_EventListenerAssetsManagerEx_init(JSContext *cx, uint
                     if (!succeed && JS_IsExceptionPending(cx)) {
                         JS_ReportPendingException(cx);
                     }
-                    removeJSObject(cx, larg0);
                 };
                 arg1 = lambda;
             }
@@ -923,6 +923,7 @@ bool js_cocos2dx_extension_EventListenerAssetsManagerEx_create(JSContext *cx, ui
     if (argc == 2) {
         cocos2d::extension::AssetsManagerEx* arg0 = nullptr;
         std::function<void (cocos2d::extension::EventAssetsManagerEx *)> arg1;
+        JSFunctionWrapper *wrapper = nullptr;
         do {
             if (args.get(0).isNull()) { arg0 = nullptr; break; }
             if (!args.get(0).isObject()) { ok = false; break; }
@@ -937,6 +938,7 @@ bool js_cocos2dx_extension_EventListenerAssetsManagerEx_create(JSContext *cx, ui
             {
                 JS::RootedObject jstarget(cx, args.thisv().toObjectOrNull());
                 std::shared_ptr<JSFunctionWrapper> func(new JSFunctionWrapper(cx, jstarget, args.get(1)));
+                wrapper = func.get();
                 auto lambda = [=](cocos2d::extension::EventAssetsManagerEx* larg0) -> void {
                     JSB_AUTOCOMPARTMENT_WITH_GLOBAL_OBJCET
                     jsval largv[1];
@@ -953,7 +955,6 @@ bool js_cocos2dx_extension_EventListenerAssetsManagerEx_create(JSContext *cx, ui
                     if (!succeed && JS_IsExceptionPending(cx)) {
                         JS_ReportPendingException(cx);
                     }
-                    removeJSObject(cx, larg0);
                 };
                 arg1 = lambda;
             }
@@ -965,12 +966,16 @@ bool js_cocos2dx_extension_EventListenerAssetsManagerEx_create(JSContext *cx, ui
             ;
         JSB_PRECONDITION2(ok, cx, false, "js_cocos2dx_extension_EventListenerAssetsManagerEx_create : Error processing arguments");
         cocos2d::extension::EventListenerAssetsManagerEx* ret = cocos2d::extension::EventListenerAssetsManagerEx::create(arg0, arg1);
-        jsval jsret = JSVAL_NULL;
+        JS::RootedValue jsret(cx);
         if (ret) {
             JS::RootedObject jsobj(cx, js_get_or_create_jsobject<cocos2d::extension::EventListenerAssetsManagerEx>(cx, ret));
             jsret = OBJECT_TO_JSVAL(jsobj);
+            if (wrapper)
+            {
+                wrapper->setOwner(cx, jsret);
+            }
         } else {
-            jsret = JSVAL_NULL;
+            jsret = JS::NullValue();
         }
         args.rval().set(jsret);
         return true;
@@ -1357,6 +1362,17 @@ bool js_unzip_get_total(JSContext *cx, uint32_t argc, jsval *vp)
     return  true;
 }
 
+using namespace std::chrono;
+
+bool js_performance_now(JSContext *cx, uint32_t argc, jsval *vp)
+{
+	JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
+	auto now = steady_clock::now();
+	auto micro = duration_cast<microseconds>(now - ScriptingCore::getInstance()->getEngineStartTime()).count();
+	args.rval().set(DOUBLE_TO_JSVAL((double)micro * 0.001));
+	return true;
+}
+
 extern JSObject* jsb_cocos2d_extension_ScrollView_prototype;
 extern JSObject* jsb_cocos2d_extension_TableView_prototype;
 extern JSObject* jsb_cocos2d_extension_Control_prototype;
@@ -1409,4 +1425,8 @@ void register_all_cocos2dx_extension_manual(JSContext* cx, JS::HandleObject glob
     JS_DefineFunction(cx, jsbObj, "unzipGetProgress", js_unzip_get_progress, 0, JSPROP_READONLY | JSPROP_PERMANENT);
     JS_DefineFunction(cx, jsbObj, "unzipGetTotal", js_unzip_get_total, 0, JSPROP_READONLY | JSPROP_PERMANENT);
 
+
+    JS::RootedObject performance(cx);
+    get_or_create_js_obj(cx, global, "performance", &performance);
+    JS_DefineFunction(cx, performance, "now", js_performance_now, 0, JSPROP_ENUMERATE | JSPROP_PERMANENT);
 }
